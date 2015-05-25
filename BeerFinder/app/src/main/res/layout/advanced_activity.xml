@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:id="@+id/spinner5"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="92dp"
+        android:spinnerMode="dropdown" />
+
+    <Spinner
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:id="@+id/spinner6"
+        android:spinnerMode="dropdown"
+        android:layout_below="@+id/spinner5"
+        android:layout_alignLeft="@+id/spinner5"
+        android:layout_alignStart="@+id/spinner5" />
+
+    <Spinner
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:id="@+id/spinner7"
+        android:spinnerMode="dropdown"
+        android:layout_below="@+id/spinner6"
+        android:layout_alignLeft="@+id/spinner6"
+        android:layout_alignStart="@+id/spinner6" />
+
+    <Spinner
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:id="@+id/spinner8"
+        android:spinnerMode="dropdown"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/spinner7"
+        android:layout_alignStart="@+id/spinner7" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zoeken"
+        android:id="@+id/advancedSearch"
+        android:layout_below="@+id/spinner8"
+        android:layout_alignLeft="@+id/spinner8"
+        android:layout_alignStart="@+id/spinner8"
+        android:layout_marginTop="46dp"
+        android:layout_alignRight="@+id/spinner8"
+        android:layout_alignEnd="@+id/spinner8" />
+</RelativeLayout>
