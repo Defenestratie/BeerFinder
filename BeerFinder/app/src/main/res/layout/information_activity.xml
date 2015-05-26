@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Naam"
+        android:id="@+id/nameText"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="52dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Telefoonnummer:"
+        android:id="@+id/phonenumberText"
+        android:layout_below="@+id/nameText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="56dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Adres:"
+        android:id="@+id/adresText"
+        android:layout_below="@+id/phonenumberText"
+        android:layout_alignLeft="@+id/phonenumberText"
+        android:layout_alignStart="@+id/phonenumberText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Openingstijden:"
+        android:id="@+id/timesText"
+        android:layout_below="@+id/adresText"
+        android:layout_alignLeft="@+id/adresText"
+        android:layout_alignStart="@+id/adresText" />
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/timesText"
+        android:layout_centerHorizontal="true"
+        tools:layout="@layout/map_activity" />
+</RelativeLayout>
