@@ -6,11 +6,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-<<<<<<< HEAD
 import android.view.View;
-=======
-//lol
->>>>>>> origin/Alex
 
 
 public class MainActivity extends Activity {
