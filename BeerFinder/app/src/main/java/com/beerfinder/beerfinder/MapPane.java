@@ -7,11 +7,15 @@ package com.beerfinder.beerfinder;
 
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 
 public class MapPane extends Activity implements OnMapReadyCallback {
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
