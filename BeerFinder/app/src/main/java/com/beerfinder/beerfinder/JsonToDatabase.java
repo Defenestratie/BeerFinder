@@ -2,6 +2,7 @@ package com.beerfinder.beerfinder;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,28 +47,30 @@ public class JsonToDatabase {
         JSONObject json = readJsonFromUrl(
                 "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
                         + lat + "," + lon +
-                        "&radius=500&types=bar|cafe|liquor_store|grocery_or_supermarket&key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c");
+                        "&radius=750&types=bar|cafe|liquor_store|grocery_or_supermarket&key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c");
 
         return json;
     }
 
-    //Read json
     public static void readJsonInfo(String lat, String lon){
         try {
             JSONObject jsonObject = readJsons(lat, lon);
-            for(int i = 0; i < jsonObject.length(); i++) {
-                String placeID = jsonObject.get("place_id").toString();
-                String name = jsonObject.get("name").toString();
+            JSONArray jsonArray = jsonObject.getJSONArray("results");
+            for(int i = 0; i < jsonArray.length(); i++) {
+                String placeID = jsonArray.getJSONObject(i).get("place_id").toString();
+                String name = jsonArray.getJSONObject(i).get("name").toString();
                 Location location = new Location(placeID, name);
                 database.insertLocationIntoDatabase(location);
             }
-            database.closeDatabase();
+
         }catch(JSONException ex){
-            Log.i("", "JSONException");
+            Log.i("", "JSONException..." + ex.getMessage());
 
         }catch(IOException ex){
-            Log.i("", "IOException");
+            Log.i("", "IOException...");
 
+        }finally{
+            database.closeDatabase();
         }
 
 

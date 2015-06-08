@@ -17,9 +17,8 @@ import java.sql.Statement;
  * Created by School on 5-6-2015.
  */
 public class Database {
-    private Connection connection = null;
-    private Statement statement = null;
-    private ResultSet resultSet = null;
+    private  static Connection connection = null;
+    private  static Statement statement = null;
 
     public Database(){
         connectToDatabase();
@@ -30,8 +29,6 @@ public class Database {
 
         try {
 
-            URL url = new URL("145.24.222.198");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             Class.forName("com.mysql.jdbc.Driver");
 
@@ -46,29 +43,23 @@ public class Database {
 
             System.out.println("U heeft verbinding");
         }catch(SQLException ex){
-            Log.i(getClass().toString(), "lala.");
+            Log.i(getClass().toString(), "Een SQLException..." + ex.getMessage());
 
         }catch(ClassNotFoundException ex){
-            Log.i(getClass().toString(), "ClassNotFoundException..." + ex.getException());
-        }catch(IOException ex){
-            Log.i(getClass().toString(), ex.getCause().toString());
-
+            Log.i(getClass().toString(), "ClassNotFoundException..." + ex.getMessage());
         }catch(Exception ex){
-            Log.i(getClass().toString(), "Dit is vervelend! " +  ex.toString());
-
+            Log.i(getClass().toString(), "An exception " +  ex.getMessage());
         }
 
 
     }//end of connectToDatabase()
 
-    private void useDatabase(){
+    private  static void useDatabase(){
         try {
             statement = connection.createStatement();
             statement.executeUpdate("USE bierapp; ");
-        }catch (SQLException ex){
-        }finally{
+        }catch (SQLException ex){}
 
-        }
 
     }//end of useDatabase()
 
@@ -80,7 +71,7 @@ public class Database {
 
             }
         }catch(SQLException ex){
-            //TODO
+            Log.i("", "A SQLException... " + ex.getMessage());
         }
     }// end of closeDatabase()
 
@@ -88,7 +79,7 @@ public class Database {
         try {
             statement = connection.createStatement();
             String sql = "INSERT INTO locaties"
-                    + "(Locatie_ID, Naam,) "
+                    + "(Locatie_ID, Naam) "
                     + "VALUES ('"
                     + location.getID()
                     + "', '"
@@ -96,7 +87,7 @@ public class Database {
                     + "');";
             statement.execute(sql);
         }catch(SQLException ex){
-            Log.i(getClass().toString(), "Niet ingevoerd.");
+            Log.i(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
         }
 
     }

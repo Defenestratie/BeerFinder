@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,8 @@ import static com.google.android.gms.common.GooglePlayServicesUtil.isGooglePlayS
 
 public class MapActivity extends FragmentActivity {
 
+    double longitude = 0.0;
+    double latitude = 0.0;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     @Override
@@ -59,8 +62,20 @@ public class MapActivity extends FragmentActivity {
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
+                loadDataIntoDatabase();
             }
         }
+    }
+
+    private void loadDataIntoDatabase() {
+        //STACK overflow code
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+        //-
+
+        JsonToDatabase.readJsonInfo(Double.toString(latitude), Double.toString(longitude));
     }
 
     /**
@@ -90,10 +105,10 @@ public class MapActivity extends FragmentActivity {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+        latitude = myLocation.getLatitude();
 
         // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+        longitude = myLocation.getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
