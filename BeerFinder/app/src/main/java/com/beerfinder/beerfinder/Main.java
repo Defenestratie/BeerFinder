@@ -1,16 +1,15 @@
 package com.beerfinder.beerfinder;
 
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class Main extends Activity {
@@ -45,11 +44,13 @@ public class Main extends Activity {
     }
 
 
+    public void openMap(View v) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 
+        int radius = Integer.parseInt(sp.getString("beerRadius", "0"));
 
-    public void openMap(View v)
-    {
-        Intent map =  new Intent(this, MapActivity.class);
-        startActivity(map);
+        Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT).show();
+//        Intent map =  new Intent(this, MapActivity.class);
+//        startActivity(map);
     }
 }
