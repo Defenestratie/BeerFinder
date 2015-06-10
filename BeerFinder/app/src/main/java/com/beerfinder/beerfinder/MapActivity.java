@@ -125,7 +125,10 @@ public class MapActivity extends FragmentActivity {
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
-
+        if(android.os.Build.VERSION.SDK_INT > 9){
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         setMarkers();
 
     }
@@ -137,9 +140,9 @@ public class MapActivity extends FragmentActivity {
             for(int i = 0; i < jsonArray.length(); i++) {
                 String placeID = jsonArray.getJSONObject(i).get("place_id").toString();
                 String name = jsonArray.getJSONObject(i).get("name").toString();
-                JSONArray jsonArray2 = json.getJSONObject("results").getJSONObject("geometry").getJSONArray("location");
-                String lat = jsonArray2.getJSONObject(i).get("lat").toString();
-                String lng = jsonArray2.getJSONObject(i).get("lng").toString();
+                JSONObject jsonArray2 = jsonArray.getJSONObject(i).getJSONObject("geometry").getJSONObject("location");
+                String lat = jsonArray2.get("lat").toString();
+                String lng = jsonArray2.get("lng").toString();
                 com.beerfinder.beerfinder.Location location = new com.beerfinder.beerfinder.Location(placeID, name);
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)))

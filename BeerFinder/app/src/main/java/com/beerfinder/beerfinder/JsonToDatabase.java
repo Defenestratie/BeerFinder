@@ -42,7 +42,7 @@ public class JsonToDatabase {
             is.close();
         }
     }
-
+    //key:AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c
     public static JSONObject readJsons(String lat, String lon) throws JSONException, IOException {
         JSONObject json = readJsonFromUrl(
                 "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="

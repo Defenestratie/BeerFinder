@@ -2,6 +2,7 @@ package com.beerfinder.beerfinder;
 
 
 
+import android.os.StrictMode;
 import android.util.Log;
 
 import java.io.IOException;
@@ -21,6 +22,10 @@ public class Database {
     private  static Statement statement = null;
 
     public Database(){
+        if(android.os.Build.VERSION.SDK_INT > 9){
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         connectToDatabase();
         useDatabase();
     }//end of constructor
