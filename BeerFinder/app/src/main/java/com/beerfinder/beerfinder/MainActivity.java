@@ -1,34 +1,25 @@
 package com.beerfinder.beerfinder;
 
-<<<<<<< HEAD
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-=======
-import android.content.Context;
->>>>>>> origin/master
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
-<<<<<<< HEAD
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-=======
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
->>>>>>> origin/master
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class MainActivity
@@ -86,16 +77,9 @@ public class MainActivity
         return super.onOptionsItemSelected(item);
     }
 
-<<<<<<< HEAD
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void openMap(View v)
-    {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-=======
     public void placePicker() {
         int PLACE_PICKER_REQUEST = 1;
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
->>>>>>> origin/master
 
         try {
             Context context = getApplicationContext();
@@ -109,7 +93,25 @@ public class MainActivity
     @Override
     public void onConnected(Bundle bundle) {
 
-<<<<<<< HEAD
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void openMap(View v)
+    {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        String radius = sp.getString("beerRadius","");
+
         switch(radius)
         {
             case "1" : radius = "1";break;
@@ -129,21 +131,12 @@ public class MainActivity
         }
 
 
-=======
-    }
->>>>>>> origin/master
 
-    @Override
-    public void onConnectionSuspended(int i) {
 
-<<<<<<< HEAD
-        //Toast.makeText(getApplicationContext(),"Radius " + radius, Toast.LENGTH_SHORT);
-=======
-    }
->>>>>>> origin/master
+        Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT);
 
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
 
+//        Intent map =  new Intent(this, MapActivity.class);
+//        startActivity(map);
     }
 }
