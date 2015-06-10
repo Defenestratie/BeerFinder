@@ -134,9 +134,5 @@ public class MainActivity
 
 
         Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT);
-
-
-//        Intent map =  new Intent(this, MapActivity.class);
-//        startActivity(map);
     }
 }
