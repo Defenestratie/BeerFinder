@@ -13,9 +13,9 @@
     <string-array name="radiusValues">
         <item>1</item>
         <item>2</item>
-        <item>3</item>
-        <item>4</item>
         <item>5</item>
+        <item>10</item>
+        <item>25</item>
     </string-array>
 
 
