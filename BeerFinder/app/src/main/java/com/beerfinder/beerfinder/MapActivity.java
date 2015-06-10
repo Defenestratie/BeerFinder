@@ -1,14 +1,13 @@
 package com.beerfinder.beerfinder;
 
 import android.content.Context;
-import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,8 +15,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import static com.google.android.gms.common.GooglePlayServicesUtil.isGooglePlayServicesAvailable;
+
 public class MapActivity extends FragmentActivity {
 
+    double longitude = 0.0;
+    double latitude = 0.0;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     @Override
@@ -28,21 +31,6 @@ public class MapActivity extends FragmentActivity {
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(getApplicationContext(), UserPreferences.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onResume() {
@@ -74,8 +62,20 @@ public class MapActivity extends FragmentActivity {
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
+                loadDataIntoDatabase();
             }
         }
+    }
+
+    private void loadDataIntoDatabase() {
+        //STACK overflow code
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+        //-
+
+        JsonToDatabase.readJsonInfo(Double.toString(latitude), Double.toString(longitude));
     }
 
     /**
@@ -85,7 +85,6 @@ public class MapActivity extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
 
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
@@ -102,43 +101,14 @@ public class MapActivity extends FragmentActivity {
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        if (myLocation == null) {
-            Log.d("Location provider", "No  location detected!");
-            try {
-                Thread.sleep(500);
-                setLocation();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-        } else {
-            setLocation();
-        }
-    }
-
-    public void setLocation() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        // Create a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
-
-        // Get the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
-
-        // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
-
-        Log.d("Location provider", "" + locationManager.getAllProviders().size());
-
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+        latitude = myLocation.getLatitude();
 
         // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+        longitude = myLocation.getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
@@ -151,5 +121,3 @@ public class MapActivity extends FragmentActivity {
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
     }
 }
-
-
