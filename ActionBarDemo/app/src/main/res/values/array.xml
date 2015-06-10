@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="empty_array"/>
+    <!--Afstand-->
+    <string-array name="radiusArray">
+        <item>1km</item>
+        <item>2km</item>
+        <item>5km</item>
+        <item>10km</item>
+        <item>25km</item>
+    </string-array>
+
+    <string-array name="radiusValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+
+    <!--merken bieren-->
+    <string-array name="brandsArray">
+        <item>Heineken</item>
+        <item>Hertog Jan</item>
+        <item>Jupiler</item>
+        <item>Bavaria</item>
+        <item>Grolsch</item>
+    </string-array>
+
+    <string-array name="brandsValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+</resources>
