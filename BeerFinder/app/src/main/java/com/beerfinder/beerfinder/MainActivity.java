@@ -15,15 +15,22 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashSet;
 import java.util.Set;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
+import android.app.Activity;
+import android.os.Bundle;
 
 
-public class MainActivity
-        extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends Activity implements OnMapReadyCallback {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -32,15 +39,9 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        placePicker();
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -77,32 +78,17 @@ public class MainActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void placePicker() {
-        int PLACE_PICKER_REQUEST = 1;
-        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-        try {
-            Context context = getApplicationContext();
-            startActivityForResult(builder.build(context), PLACE_PICKER_REQUEST);
-        }
-        catch (Exception e) {
-
-        }
-    }
-
     @Override
-    public void onConnected(Bundle bundle) {
+    public void onMapReady(GoogleMap map) {
+        LatLng sydney = new LatLng(-33.867, 151.206);
 
-    }
+        map.setMyLocationEnabled(true);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        map.addMarker(new MarkerOptions()
+                .title("Sydney")
+                .snippet("The most populous city in Australia.")
+                .position(sydney));
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -129,8 +115,6 @@ public class MainActivity
         for (String s : set) {
             Log.d("beerBrands", s);
         }
-
-
 
 
         Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT);
