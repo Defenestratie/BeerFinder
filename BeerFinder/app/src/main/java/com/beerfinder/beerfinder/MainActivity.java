@@ -32,7 +32,7 @@ import android.os.Bundle;
 
 public class MainActivity extends Activity implements OnMapReadyCallback {
 
-    private GoogleApiClient mGoogleApiClient;
+    //private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +47,12 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        //mGoogleApiClient.disconnect();
         super.onStop();
     }
 
