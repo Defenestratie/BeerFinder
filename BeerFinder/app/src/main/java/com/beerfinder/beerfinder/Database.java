@@ -16,32 +16,33 @@ import java.sql.Statement;
 /**
  * Created by School on 5-6-2015.
  */
-public class Database {
+public class Database extends Thread{
     private  static Connection connection = null;
     private  static Statement statement = null;
 
     public Database(){
         connectToDatabase();
         useDatabase();
+        insertBeerIntoDatabase("test","normaal","pint");
     }//end of constructor
 
     private void connectToDatabase(){
 
         try {
 
-
+            Log.d("database","connecting database start");
             Class.forName("com.mysql.jdbc.Driver");
 
             connection = DriverManager.getConnection(
                     //The adres of the server
-                    "jdbc:mysql://145.24.222.198:8001",
+                    "jdbc:mysql://145.24.222.189:8001",
                     //username
-                    "root",
+                    "Elize",
                     //password
-                    "blijdorp"
+                    "Bierapp"
             );
 
-            System.out.println("U heeft verbinding");
+            Log.d("Database","U heeft verbinding");
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Een SQLException..." + ex.getMessage());
 
@@ -88,6 +89,25 @@ public class Database {
             statement.execute(sql);
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
+        }
+
+    }
+
+    public void insertBeerIntoDatabase(String merk, String naam, String soort){
+        try {
+            statement = connection.createStatement();
+            String sql = "INSERT INTO bier"
+                    + "(Merk, Soort_bier,Naam) "
+                    + "VALUES ('"
+                    + merk
+                    + "', '"
+                    + soort
+                    +"', '"
+                    + merk
+                    + "');";
+            statement.execute(sql);
+        }catch(SQLException ex){
+            Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
         }
 
     }
