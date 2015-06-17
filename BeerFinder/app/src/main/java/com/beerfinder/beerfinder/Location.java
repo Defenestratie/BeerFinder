@@ -22,6 +22,11 @@ public class Location {
 
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public Location(String ID, String name){
         this.ID = ID;
         this.name = name;

@@ -78,17 +78,6 @@ public class JsonToDatabase {
         return arrayListLocations;
     }
 
-    public static String[] getPlacesNames(String lat, String lon){
-        if(arrayListLocations.isEmpty()){
-            readJsonInfo(lat, lon);
-            getPlacesNames(lat, lon);
-        }
-        String[] names = new String[arrayListLocations.size()];
-        for(int i = 0; i < arrayListLocations.size(); i++){
-            names[i] = arrayListLocations.get(i).getName();
 
-        }
-        return names;
-    }
 
 }
