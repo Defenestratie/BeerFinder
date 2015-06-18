@@ -129,4 +129,11 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
 
 
     }
+
+//    PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+//    for (int z = 0; z < list.size(); z++) {
+//        LatLng point = list.get(z);
+//        options.add(point);
+//    }
+//    line = myMap.addPolyline(options);
 }
