@@ -61,7 +61,17 @@ public class JsonToDatabase {
             for(int i = 0; i < jsonArray.length(); i++) {
                 String placeID = jsonArray.getJSONObject(i).get("place_id").toString();
                 String name = jsonArray.getJSONObject(i).get("name").toString();
-                Location location = new Location(placeID, name);
+                double latitudeLoctaion =
+                        Double.parseDouble(jsonArray.getJSONObject(i).
+                                getJSONObject("geometry")
+                                .getJSONObject("location")
+                                .get("lat").toString());
+                double longitudeLocation =
+                        Double.parseDouble(jsonArray.getJSONObject(i).
+                                getJSONObject("geometry")
+                                .getJSONObject("location")
+                                .get("lng").toString());
+                Location location = new Location(placeID, name, latitudeLoctaion, longitudeLocation);
                 arrayListLocations.add(location);
                 database.insertLocationIntoDatabase(location);
             }

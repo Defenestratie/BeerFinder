@@ -1,15 +1,12 @@
 package com.beerfinder.beerfinder;
 
 /**
- * Created by School on 5-6-2015.
+ * Created by Elize on 5-6-2015.
  */
 public class Location {
     private String type= null;
     private String name = null;
     private String ID = null;
-    private String adress = null;
-    private String phoneNumber = null;
-    private String website = null;
     private double lat;
     private double lon;
 

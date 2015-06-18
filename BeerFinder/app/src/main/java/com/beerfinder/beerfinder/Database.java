@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Created by School on 5-6-2015.
+ * Created by Elize on 5-6-2015.
  */
 public class Database extends Thread{
     private  static Connection connection = null;

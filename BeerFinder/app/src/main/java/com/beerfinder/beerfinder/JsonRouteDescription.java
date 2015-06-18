@@ -61,7 +61,7 @@ public class JsonRouteDescription {
             for(int i = 0; i < route1.length(); i++){
                 JSONObject object = route1.getJSONObject(i).getJSONObject("end_location");
                 double latEndLocation = Double.valueOf(object.get("lat").toString());
-                double lonEndLocation = Double.valueOf(object.get("lon").toString());
+                double lonEndLocation = Double.valueOf(object.get("lng").toString());
                 LocationPointer pointer = new LocationPointer(latEndLocation, lonEndLocation);
                 pointersList.add(pointer);
             }
