@@ -27,7 +27,10 @@ import java.util.List;
 public class MapActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    double latitude = 0;
 
+    // Get longitude of the current location
+    double longitude = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,18 +38,20 @@ public class MapActivity extends FragmentActivity {
         setUpMapIfNeeded();
 
         final ListView listview = (ListView) findViewById(R.id.listView);
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-                "Android", "iPhone", "WindowsMobile" };
+//        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
+//                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+//                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
+//                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
+//                "Android", "iPhone", "WindowsMobile" };
+//
+//        final ArrayList<String> list = new ArrayList<String>();
+//        for (int i = 0; i < values.length; ++i) {
+//            list.add(values[i]);
+//        }
 
-        final ArrayList<String> list = new ArrayList<String>();
-        for (int i = 0; i < values.length; ++i) {
-            list.add(values[i]);
-        }
+        final ArrayList LocationsList = JsonToDatabase.readJsonInfo(Double.toString(latitude), Double.toString(longitude));
         final StableArrayAdapter adapter = new StableArrayAdapter(this,
-                android.R.layout.simple_list_item_1, list);
+                android.R.layout.simple_list_item_1, LocationsList);
         listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,7 +64,7 @@ public class MapActivity extends FragmentActivity {
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                list.remove(item);
+                                LocationsList.remove(item);
                                 adapter.notifyDataSetChanged();
                                 view.setAlpha(1);
                             }
@@ -201,10 +206,10 @@ public class MapActivity extends FragmentActivity {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+        latitude = myLocation.getLatitude();
 
         // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+        longitude = myLocation.getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
