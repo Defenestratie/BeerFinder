@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 
 /**
@@ -21,6 +22,7 @@ import java.nio.charset.Charset;
 public class JsonToDatabase {
 
         private static Database database = new Database();
+        public static ArrayList<Location> arrayListLocations = new ArrayList<Location>();
 
         private static String readAll(Reader rd) throws IOException {
             StringBuilder sb = new StringBuilder();
@@ -52,7 +54,7 @@ public class JsonToDatabase {
         return json;
     }
 
-    public static void readJsonInfo(String lat, String lon){
+    public static ArrayList<Location> readJsonInfo(String lat, String lon){
         try {
             JSONObject jsonObject = readJsons(lat, lon);
             JSONArray jsonArray = jsonObject.getJSONArray("results");
@@ -60,6 +62,7 @@ public class JsonToDatabase {
                 String placeID = jsonArray.getJSONObject(i).get("place_id").toString();
                 String name = jsonArray.getJSONObject(i).get("name").toString();
                 Location location = new Location(placeID, name);
+                arrayListLocations.add(location);
                 database.insertLocationIntoDatabase(location);
             }
 
@@ -72,13 +75,8 @@ public class JsonToDatabase {
         }finally{
             database.closeDatabase();
         }
-
-
-
-
+        return arrayListLocations;
     }
-
-
 
 
 

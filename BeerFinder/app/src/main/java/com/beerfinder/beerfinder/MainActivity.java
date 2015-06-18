@@ -37,11 +37,11 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+//        MapFragment mapFragment = (MapFragment) getFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -118,5 +118,14 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
 
 
         Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT);
+    }
+
+    public void insertDatabase(View v)
+    {
+
+        (new Thread(new Database())).start();
+
+
+        //db.insertBeerIntoDatabase("test","normaal","pint");
     }
 }
