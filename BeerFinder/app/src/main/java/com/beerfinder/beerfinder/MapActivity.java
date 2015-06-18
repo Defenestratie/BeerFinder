@@ -37,8 +37,9 @@ public class MapActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+        setListview();
 
-        final ListView listview = (ListView) findViewById(R.id.listView);
+
 //        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
 //                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
 //                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
@@ -51,15 +52,10 @@ public class MapActivity extends FragmentActivity {
 //        }
 
         //Voor de exception over de NetworkOnMainThreadException
-        StrictMode.ThreadPolicy policy = new
-                StrictMode.ThreadPolicy.Builder()
-                .permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        final ArrayList LocationsList = JsonToDatabase.readJsonInfo(Double.toString(latitude), Double.toString(longitude));
+
 //        final StableArrayAdapter adapter = new StableArrayAdapter(this,
 //                android.R.layout.simple_list_item_1, LocationsList);
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, LocationsList);
-        listview.setAdapter(adapter);
+
 
 //        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //
@@ -79,6 +75,8 @@ public class MapActivity extends FragmentActivity {
 //            }
 //
 //        });
+
+        JsonToDatabase.readJsonInfo(Double.toString(latitude), Double.toString(longitude));
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -221,6 +219,17 @@ public class MapActivity extends FragmentActivity {
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
+    }
+
+    private void setListview(){
+        final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        final ArrayList LocationsList = JsonToDatabase.readJsonInfo(Double.toString(latitude), Double.toString(longitude));
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, LocationsList);
+        listview.setAdapter(adapter);
     }
 }
 

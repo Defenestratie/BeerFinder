@@ -33,6 +33,13 @@ public class Location {
         this.lon = lon;
     }
 
+    public Location(String ID,String name, double lat, double lon, String type) {
+        this.type = type;
+        this.name = name;
+        this.ID = ID;
+        this.lat = lat;
+        this.lon = lon;
+    }
 
     public String getID() {
         return ID;
