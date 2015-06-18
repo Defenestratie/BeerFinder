@@ -33,6 +33,7 @@ import android.os.Bundle;
 public class MainActivity extends Activity implements OnMapReadyCallback {
 
     //private GoogleApiClient mGoogleApiClient;
+    Database db = new Database();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,14 +119,14 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
 
 
         Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT);
+        db.insertBeerIntoDatabase("test", "normaal", "pint");
+
     }
 
     public void insertDatabase(View v)
     {
 
-        (new Thread(new Database())).start();
 
 
-        //db.insertBeerIntoDatabase("test","normaal","pint");
     }
 }
