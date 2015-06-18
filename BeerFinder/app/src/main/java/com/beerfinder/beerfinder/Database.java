@@ -4,19 +4,15 @@ package com.beerfinder.beerfinder;
 
 import android.util.Log;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
  * Created by School on 5-6-2015.
  */
-public class Database {
+public class Database extends Thread{
     private  static Connection connection = null;
     private  static Statement statement = null;
 
