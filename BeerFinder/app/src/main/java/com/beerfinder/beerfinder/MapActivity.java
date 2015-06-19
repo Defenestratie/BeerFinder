@@ -38,14 +38,15 @@ public class MapActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        setUpMapIfNeeded();
+        Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
         getLocationList();
         Log.i("Tag", "List opgehaald.");
         if(LocationsList.isEmpty() ){
             Log.i("Tag", "Arraylist leeg.");
 
         }else {
-            setUpMapIfNeeded();
-            Log.i("Tag", "Map opgezet.");
+
             setMarkers();
             Log.i("Tag", "Markers geplaatst");
             setListview();

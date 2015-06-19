@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 
+
 /**
  * Created by Hans on 5-6-2015.
  */
@@ -47,18 +48,22 @@ public class JsonToDatabase {
     }
 
     public static JSONObject readJsons(String lat, String lon) throws JSONException, IOException {
-        JSONObject json = readJsonFromUrl(
-                "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
-                        + lat + "," + lon +
-                        "&radius=750&types=bar|cafe|liquor_store|grocery_or_supermarket&key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c");
+        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
+                + lat + "," + lon +
+                "&radius=750&types=bar|cafe|liquor_store|grocery_or_supermarket&key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c";
 
+        JSONObject json = readJsonFromUrl(url);
+                 Log.i("Tag", url);
         return json;
     }
 
     public static ArrayList<Location> readJsonInfo(String lat, String lon){
         try {
             JSONObject jsonObject = readJsons(lat, lon);
+            if(jsonObject.equals(null)){
+                Log.i("Tag", "Json is leeg");
 
+            }
             JSONArray jsonArray = jsonObject.getJSONArray("results");
             for(int i = 0; i < jsonArray.length(); i++) {
 
@@ -68,43 +73,45 @@ public class JsonToDatabase {
                 //name of place
                 String name = jsonArray.getJSONObject(i).get("name").toString();
                 //latutude of the place
-                double latitudeLocation =
-                        Double.parseDouble(jsonArray.getJSONObject(i).
-                                getJSONObject("geometry")
-                                .getJSONObject("location")
-                                .get("lat").toString());
-                //longitude of the place
-                double longitudeLocation =
-                        Double.parseDouble(jsonArray.getJSONObject(i).
-                                getJSONObject("geometry")
-                                .getJSONObject("location")
-                                .get("lng").toString());
+//                double latitudeLocation =
+//                        Double.parseDouble(jsonArray.getJSONObject(i).
+//                                getJSONObject("geometry")
+//                                .getJSONObject("location")
+//                                .get("lat").toString());
+//                //longitude of the place
+//                double longitudeLocation =
+//                        Double.parseDouble(jsonArray.getJSONObject(i).
+//                                getJSONObject("geometry")
+//                                .getJSONObject("location")
+//                                .get("lng").toString());
+//
+//                //type of the place
+//                JSONArray typesInJson = jsonArray.getJSONObject(i).getJSONArray("types");
+//                String type = null;
+//                for(String t:typesArray){
+//                    for(int i2 = 0; i < typesInJson.length(); i++)
+//                    if(t.equals(t.equals(typesInJson.get(i2)))){
+//                        type = t;
+//                        break;
+//                    }
+//                }
+//                //get if location is open right now
+//                String open_now = "Onbekend";
+//                String open_nowJson = jsonArray.getJSONObject(i).getJSONObject("opening_hours").get("open_now").toString();
+//                if(open_nowJson.equals("true")){
+//                    open_now = "Open";
+//                }else if(open_nowJson.equals("false")){
+//                    open_now = "Gesloten";
+//                }
+//
+//                //the adress of the location
+//                String adres = jsonArray.getJSONObject(i).get("vicinity").toString();
 
-                //type of the place
-                JSONArray typesInJson = jsonArray.getJSONObject(i).getJSONArray("types");
-                String type = null;
-                for(String t:typesArray){
-                    for(int i2 = 0; i < typesInJson.length(); i++)
-                    if(t.equals(t.equals(typesInJson.get(i2)))){
-                        type = t;
-                        break;
-                    }
-                }
-                //get if location is open right now
-                String open_now = "Onbekend";
-                String open_nowJson = jsonArray.getJSONObject(i).getJSONObject("opening_hours").get("open_now").toString();
-                if(open_nowJson.equals("true")){
-                    open_now = "Open";
-                }else if(open_nowJson.equals("false")){
-                    open_now = "Gesloten";
-                }
-
-                //the adress of the location
-                String adres = jsonArray.getJSONObject(i).get("vicinity").toString();
-
-                Location location = new Location(placeID, name, latitudeLocation, longitudeLocation, type, open_now, adres);
+                //Location location = new Location(placeID, name, latitudeLocation, longitudeLocation, type, open_now, adres);
+                Location location = new Location(placeID, name, 0, 0, null, null, null);
+                Log.i("Tag", name);
                 arrayListLocations.add(location);
-                database.insertLocationIntoDatabase(location);
+                //database.insertLocationIntoDatabase(location);
             }
 
         }catch(JSONException ex){
@@ -112,6 +119,10 @@ public class JsonToDatabase {
 
         }catch(IOException ex){
             Log.i("", "IOException...");
+
+        }catch(Exception ex){
+            Log.i("Tag", "Er is iets mis gegaan " + ex.getMessage());
+
 
         }finally{
             database.closeDatabase();
