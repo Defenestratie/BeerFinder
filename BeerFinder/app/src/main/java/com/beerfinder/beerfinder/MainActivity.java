@@ -119,7 +119,7 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
 
 
         Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT);
-        db.insertBeerIntoDatabase("test", "normaal", "pint");
+        db.insertBeerIntoDatabase("test", "normaal", 3);
 
     }
 

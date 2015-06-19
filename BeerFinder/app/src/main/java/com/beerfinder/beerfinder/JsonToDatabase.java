@@ -58,6 +58,7 @@ public class JsonToDatabase {
     public static ArrayList<Location> readJsonInfo(String lat, String lon){
         try {
             JSONObject jsonObject = readJsons(lat, lon);
+
             JSONArray jsonArray = jsonObject.getJSONArray("results");
             for(int i = 0; i < jsonArray.length(); i++) {
 
@@ -89,8 +90,19 @@ public class JsonToDatabase {
                         break;
                     }
                 }
+                //get if location is open right now
+                String open_now = "Onbekend";
+                String open_nowJson = jsonArray.getJSONObject(i).getJSONObject("opening_hours").get("open_now").toString();
+                if(open_nowJson.equals("true")){
+                    open_now = "Open";
+                }else if(open_nowJson.equals("false")){
+                    open_now = "Gesloten";
+                }
 
-                Location location = new Location(placeID, name, latitudeLocation, longitudeLocation, type);
+                //the adress of the location
+                String adres = jsonArray.getJSONObject(i).get("vicinity").toString();
+
+                Location location = new Location(placeID, name, latitudeLocation, longitudeLocation, type, open_now, adres);
                 arrayListLocations.add(location);
                 database.insertLocationIntoDatabase(location);
             }
@@ -103,10 +115,23 @@ public class JsonToDatabase {
 
         }finally{
             database.closeDatabase();
+            waitForList();
+            return arrayListLocations;
         }
-        return arrayListLocations;
+
     }
 
+    private static void waitForList() {
+        if(arrayListLocations.isEmpty()){
+            try {
+                Thread.sleep(500);
+
+            }catch(InterruptedException ex){
+                Log.i("Tag", "Interupted..");
+
+            }
+        }
+    }
 
 
 }

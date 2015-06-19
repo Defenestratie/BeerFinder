@@ -23,7 +23,6 @@ public class Database extends Thread{
                 public void run() {
                     connectToDatabase();
                     useDatabase();
-                    insertBeerIntoDatabase("test", "normaal", "pint");
                 }
             }));
 
@@ -102,15 +101,15 @@ public class Database extends Thread{
 
     }
 
-    public void insertBeerIntoDatabase(String merk, String naam, String soort){
+    public void insertBeerIntoDatabase(String merk, String naam, int soort_ID){
         try {
             statement = connection.createStatement();
             String sql = "INSERT INTO bier"
-                    + "(Merk, Soort_bier,Naam) "
+                    + "(Merk, Soort_bier, Naam) "
                     + "VALUES ('"
                     + merk
                     + "', '"
-                    + soort
+                    + soort_ID
                     +"', '"
                     + naam
                     + "');";
