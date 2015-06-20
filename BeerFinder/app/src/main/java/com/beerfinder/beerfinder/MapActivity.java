@@ -6,18 +6,16 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -32,6 +30,16 @@ public class MapActivity extends FragmentActivity {
     public static double myLatitude = 0;
     public static double myLongitude = 0;
     ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
+    CustomList nameImgAdapter;
+
+    ListView list;
+    ArrayList<String> nameList = new ArrayList<String>();
+    ArrayList<BitmapDescriptor> imageList;
+    String[] staticNameList;
+    Integer[] staticImageList;
+
+//    String[] nameList;
+//    Integer[] imageList;
 
 
 
@@ -46,10 +54,10 @@ public class MapActivity extends FragmentActivity {
         //Json uitpakken
         getLocationList();
         Log.i("Tag", "List opgehaald.");
-        if(LocationsList.isEmpty() ){
+        if (LocationsList.isEmpty() ){
             Log.i("Tag", "Arraylist leeg.");
 
-        }else {
+        } else {
 
             setMarkers();
             Log.i("Tag", "Markers geplaatst");
@@ -57,6 +65,17 @@ public class MapActivity extends FragmentActivity {
             Log.i("Tag", "Listview gemaakt.");
             InsertToDatabase();
         }
+
+
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view,
+//                                    int position, long id) {
+//                Toast.makeText(MainActivity.this, "You Clicked at " + web[+position], Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
 
 //        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
 //                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
@@ -110,7 +129,7 @@ public class MapActivity extends FragmentActivity {
     private void InsertToDatabase() {
         Database database = new Database();
         try{
-        new Database().execute().get();
+            new Database().execute().get();
             for(com.beerfinder.beerfinder.Location location: LocationsList) {
 
                 database.insertLocationIntoDatabase(location);
@@ -288,8 +307,26 @@ public class MapActivity extends FragmentActivity {
     private void setListview(){
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, LocationsList);
-        listview.setAdapter(adapter);
+        for(com.beerfinder.beerfinder.Location location: LocationsList ){
+            try {
+                nameList.add(location.getName());
+                imageList.add(location.getTypeIcon(this));
+            }
+            catch (Exception e) {
+                Log.d("arraylist adapter", "Exception met toevoegen van image aan array");
+            }
+        }
+
+        staticNameList = new String[nameList.size()];
+        staticNameList = nameList.toArray(staticNameList);
+
+        staticImageList = new Integer[imageList.size()];
+        staticImageList = imageList.toArray(staticImageList);
+
+        nameImgAdapter = new CustomList(this, staticNameList, staticImageList);
+
+//        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_single, LocationsList);
+        listview.setAdapter(nameImgAdapter);
     }
 }
 
