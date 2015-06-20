@@ -24,12 +24,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MapActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    double myLatitude = 0;
-    double myLongitude = 0;
+    public static double myLatitude = 0;
+    public static double myLongitude = 0;
     ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
 
 
@@ -40,6 +41,9 @@ public class MapActivity extends FragmentActivity {
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
         Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
+        //Json call
+        SetJsonObject();
+        //Json uitpakken
         getLocationList();
         Log.i("Tag", "List opgehaald.");
         if(LocationsList.isEmpty() ){
@@ -51,6 +55,7 @@ public class MapActivity extends FragmentActivity {
             Log.i("Tag", "Markers geplaatst");
             setListview();
             Log.i("Tag", "Listview gemaakt.");
+            InsertToDatabase();
         }
 
 //        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
@@ -91,12 +96,43 @@ public class MapActivity extends FragmentActivity {
 
     }
 
+    private void SetJsonObject() {
+        try {
+            new JsonToDatabase().execute(Double.toString(myLatitude), Double.toString(myLongitude)).get();
+        }catch(ExecutionException ex){
+            Log.i("Tag", "JsonObject ophalen onderbroken!");
+
+        }catch(InterruptedException ex){
+            Log.i("Tag", "JsonObject ophalen onderbroken!");
+        }
+    }
+
+    private void InsertToDatabase() {
+        Database database = new Database();
+        try{
+        new Database().execute().get();
+            for(com.beerfinder.beerfinder.Location location: LocationsList) {
+
+                database.insertLocationIntoDatabase(location);
+
+            }
+            database.closeDatabase();
+
+        }catch(ExecutionException ex){
+            Log.i("Tag", "Database ophalen onderbroken!");
+
+        }catch(InterruptedException ex){
+            Log.i("Tag", "Database ophalen onderbroken!");
+        }
+
+    }
+
     private void getLocationList() {
-        StrictMode.ThreadPolicy policy = new
-                StrictMode.ThreadPolicy.Builder()
-                .permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        LocationsList = JsonToDatabase.readJsonInfo(Double.toString(myLatitude), Double.toString(myLongitude));
+//        StrictMode.ThreadPolicy policy = new
+//                StrictMode.ThreadPolicy.Builder()
+//                .permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
+        LocationsList = JsonToDatabase.readJsonInfo();
     }
 
     private void setMarkers() {

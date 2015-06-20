@@ -2,6 +2,7 @@ package com.beerfinder.beerfinder;
 
 
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.sql.Connection;
@@ -12,27 +13,20 @@ import java.sql.Statement;
 /**
  * Created by Elize on 5-6-2015.
  */
-public class Database extends Thread{
+public class Database extends AsyncTask<Void, Void, Void>{
     private  static Connection connection = null;
     private  static Statement statement = null;
 
     public Database(){
-        try {
-            Thread threat = new Thread(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    connectToDatabase();
-                    useDatabase();
-                }
-            }));
 
-            threat.start();
-            threat.join();
-        }catch(InterruptedException ex){
-            Log.i(this.getClass().toString(), "Something went wrong during the database thread..");
-
-        }
     }//end of constructor
+
+    @Override
+    protected Void doInBackground(Void... params) {
+        connectToDatabase();
+        useDatabase();
+        return null;
+    }
 
     private void connectToDatabase(){
 
