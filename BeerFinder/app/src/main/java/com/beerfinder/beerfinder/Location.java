@@ -1,6 +1,7 @@
 package com.beerfinder.beerfinder;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -16,6 +17,7 @@ public class Location {
     private double lon;
     private String open_now = "Onbekend";
     private String adres =  null;
+    private Bitmap icon = null;
 
 //    public Location(String type, String name, String ID, String adress, String phoneNumber, String website){
 //        this.type = type;
@@ -50,6 +52,17 @@ public class Location {
         this.adres = adres;
     }
 
+    public Location(String ID,String name, double lat, double lon, String type, String open_now, String adres, Bitmap icon) {
+        this.type = type;
+        this.name = name;
+        this.ID = ID;
+        this.lat = lat;
+        this.lon = lon;
+        this.open_now = open_now;
+        this.adres = adres;
+        this.icon = icon;
+    }
+
     public String getID() {
         return ID;
     }
@@ -75,10 +88,13 @@ public class Location {
     }
 
     public BitmapDescriptor getTypeIcon(Context context) {
-        
         String imageName = this.getType();
         int imageID = context.getResources().getIdentifier(this.getType() , "drawable", context.getPackageName());
         return BitmapDescriptorFactory.fromResource(imageID);
+    }
+
+    public Bitmap getIcon() {
+        return icon;
     }
 
     public String getType() {

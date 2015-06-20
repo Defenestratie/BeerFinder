@@ -2,10 +2,12 @@ package com.beerfinder.beerfinder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -15,12 +17,12 @@ import android.widget.ListView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -34,9 +36,9 @@ public class MapActivity extends FragmentActivity {
 
     ListView list;
     ArrayList<String> nameList = new ArrayList<String>();
-    ArrayList<BitmapDescriptor> imageList;
+    ArrayList<Bitmap> imageList = new ArrayList<Bitmap>();
     String[] staticNameList;
-    Integer[] staticImageList;
+    Bitmap[] staticImageList;
 
 //    String[] nameList;
 //    Integer[] imageList;
@@ -147,10 +149,10 @@ public class MapActivity extends FragmentActivity {
     }
 
     private void getLocationList() {
-//        StrictMode.ThreadPolicy policy = new
-//                StrictMode.ThreadPolicy.Builder()
-//                .permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         LocationsList = JsonToDatabase.readJsonInfo();
     }
 
@@ -304,23 +306,29 @@ public class MapActivity extends FragmentActivity {
         mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
     }
 
+    public static int[] convertIntegers(List<Integer> integers)
+    {
+        int[] ret = new int[integers.size()];
+        Iterator<Integer> iterator = integers.iterator();
+        for (int i = 0; i < ret.length; i++)
+        {
+            ret[i] = iterator.next().intValue();
+        }
+        return ret;
+    }
+
     private void setListview(){
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
 
         for(com.beerfinder.beerfinder.Location location: LocationsList ){
-            try {
                 nameList.add(location.getName());
-                imageList.add(location.getTypeIcon(this));
-            }
-            catch (Exception e) {
-                Log.d("arraylist adapter", "Exception met toevoegen van image aan array");
-            }
+                imageList.add(location.getIcon());
         }
 
         staticNameList = new String[nameList.size()];
         staticNameList = nameList.toArray(staticNameList);
 
-        staticImageList = new Integer[imageList.size()];
+        staticImageList = new Bitmap[imageList.size()];
         staticImageList = imageList.toArray(staticImageList);
 
         nameImgAdapter = new CustomList(this, staticNameList, staticImageList);

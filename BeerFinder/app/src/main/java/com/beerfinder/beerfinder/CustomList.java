@@ -3,7 +3,9 @@ package com.beerfinder.beerfinder;
 /**
  * Created by Alex on 18-6-2015.
  */
+
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +17,12 @@ public class CustomList extends ArrayAdapter<String>{
 
     private final Activity context;
     private final String[] web;
-    private final Integer[] imageId;
-    public CustomList(Activity context, String[] web, Integer[] imageId) {
+    private final Bitmap[] imageBitmap;
+    public CustomList(Activity context, String[] web, Bitmap[] imageId) {
         super(context, R.layout.list_single, web);
         this.context = context;
         this.web = web;
-        this.imageId = imageId;
+        this.imageBitmap = imageId;
 
     }
     @Override
@@ -32,7 +34,9 @@ public class CustomList extends ArrayAdapter<String>{
         ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
         txtTitle.setText(web[position]);
 
-        imageView.setImageResource(imageId[position]);
+        imageView.setImageBitmap(imageBitmap[position]);
+
+//        imageView.setImageResource(imageBitmap[position]);
         return rowView;
     }
 }
