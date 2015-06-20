@@ -6,6 +6,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,50 +24,123 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MapActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    public static double myLatitude = 0;
+    public static double myLongitude = 0;
+    ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+        Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
+        //Json call
+        SetJsonObject();
+        //Json uitpakken
+        getLocationList();
+        Log.i("Tag", "List opgehaald.");
+        if(LocationsList.isEmpty() ){
+            Log.i("Tag", "Arraylist leeg.");
 
-        final ListView listview = (ListView) findViewById(R.id.listView);
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-                "Android", "iPhone", "WindowsMobile" };
+        }else {
 
-        final ArrayList<String> list = new ArrayList<String>();
-        for (int i = 0; i < values.length; ++i) {
-            list.add(values[i]);
+            setMarkers();
+            Log.i("Tag", "Markers geplaatst");
+            setListview();
+            Log.i("Tag", "Listview gemaakt.");
+            InsertToDatabase();
         }
-        final StableArrayAdapter adapter = new StableArrayAdapter(this,
-                android.R.layout.simple_list_item_1, list);
-        listview.setAdapter(adapter);
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
+//                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+//                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
+//                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
+//                "Android", "iPhone", "WindowsMobile" };
+//
+//        final ArrayList<String> list = new ArrayList<String>();
+//        for (int i = 0; i < values.length; ++i) {
+//            list.add(values[i]);
+//        }
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.remove(item);
-                                adapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-                            }
-                        });
+        //Voor de exception over de NetworkOnMainThreadException
+
+//        final StableArrayAdapter adapter = new StableArrayAdapter(this,
+//                android.R.layout.simple_list_item_1, LocationsList);
+
+
+//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, final View view,
+//                                    int position, long id) {
+//                final String item = (String) parent.getItemAtPosition(position);
+//                view.animate().setDuration(2000).alpha(0)
+//                        .withEndAction(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                LocationsList.remove(item);
+//                                adapter.notifyDataSetChanged();
+//                                view.setAlpha(1);
+//                            }
+//                        });
+//            }
+//
+//        });
+
+    }
+
+    private void SetJsonObject() {
+        try {
+            new JsonToDatabase().execute(Double.toString(myLatitude), Double.toString(myLongitude)).get();
+        }catch(ExecutionException ex){
+            Log.i("Tag", "JsonObject ophalen onderbroken!");
+
+        }catch(InterruptedException ex){
+            Log.i("Tag", "JsonObject ophalen onderbroken!");
+        }
+    }
+
+    private void InsertToDatabase() {
+        Database database = new Database();
+        try{
+        new Database().execute().get();
+            for(com.beerfinder.beerfinder.Location location: LocationsList) {
+
+                database.insertLocationIntoDatabase(location);
+
             }
+            database.closeDatabase();
 
-        });
+        }catch(ExecutionException ex){
+            Log.i("Tag", "Database ophalen onderbroken!");
+
+        }catch(InterruptedException ex){
+            Log.i("Tag", "Database ophalen onderbroken!");
+        }
+
+    }
+
+    private void getLocationList() {
+//        StrictMode.ThreadPolicy policy = new
+//                StrictMode.ThreadPolicy.Builder()
+//                .permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
+        LocationsList = JsonToDatabase.readJsonInfo();
+    }
+
+    private void setMarkers() {
+        for(com.beerfinder.beerfinder.Location location: LocationsList ){
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(location.getLat(), location.getLon()))
+                    .title(location.getName()).icon(location.getTypeIcon(this)));
+        }
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -83,7 +157,7 @@ public class MapActivity extends FragmentActivity {
 
         @Override
         public long getItemId(int position) {
-            String item = getItem(position);
+            String item = getItem(position).toString();
             return mIdMap.get(item);
         }
 
@@ -144,12 +218,6 @@ public class MapActivity extends FragmentActivity {
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
     private void setUpMap() {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
 
@@ -201,20 +269,27 @@ public class MapActivity extends FragmentActivity {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+        myLatitude = myLocation.getLatitude();
 
         // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+        myLongitude = myLocation.getLongitude();
 
         // Create a LatLng object for the current location
-        LatLng latLng = new LatLng(latitude, longitude);
+        LatLng latLng = new LatLng(myLatitude, myLongitude);
 
         // Show the current location in Google Map
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
+        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
+    }
+
+    private void setListview(){
+        final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, LocationsList);
+        listview.setAdapter(adapter);
     }
 }
 

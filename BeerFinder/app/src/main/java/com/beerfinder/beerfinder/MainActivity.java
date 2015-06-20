@@ -33,6 +33,7 @@ import android.os.Bundle;
 public class MainActivity extends Activity implements OnMapReadyCallback {
 
     //private GoogleApiClient mGoogleApiClient;
+    Database db = new Database();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,14 +119,21 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
 
 
         Toast.makeText(getApplicationContext(), "Radius " + radius, Toast.LENGTH_SHORT);
+        db.insertBeerIntoDatabase("test", "normaal", 3);
+
     }
 
     public void insertDatabase(View v)
     {
 
-        (new Thread(new Database())).start();
 
 
-        //db.insertBeerIntoDatabase("test","normaal","pint");
     }
+
+//    PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+//    for (int z = 0; z < list.size(); z++) {
+//        LatLng point = list.get(z);
+//        options.add(point);
+//    }
+//    line = myMap.addPolyline(options);
 }
