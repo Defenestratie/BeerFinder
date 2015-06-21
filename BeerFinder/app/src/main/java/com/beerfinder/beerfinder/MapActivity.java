@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class MapActivity extends FragmentActivity {
+public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static double myLatitude = 0;
@@ -47,11 +48,11 @@ public class MapActivity extends FragmentActivity {
 //    Integer[] imageList;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         setUpMapIfNeeded();
         Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
         //Json call
@@ -60,7 +61,7 @@ public class MapActivity extends FragmentActivity {
 
         getLocationList();
         Log.i("Tag", "List opgehaald.");
-        if (LocationsList.isEmpty() ){
+        if (LocationsList.isEmpty()) {
             Log.i("Tag", "Arraylist leeg.");
 
         } else {
@@ -128,29 +129,29 @@ public class MapActivity extends FragmentActivity {
     private void SetJsonObject() {
         try {
             new JsonToDatabase().execute(Double.toString(myLatitude), Double.toString(myLongitude)).get();
-        }catch(ExecutionException ex){
+        } catch (ExecutionException ex) {
             Log.i("Tag", "JsonObject ophalen onderbroken!");
 
-        }catch(InterruptedException ex){
+        } catch (InterruptedException ex) {
             Log.i("Tag", "JsonObject ophalen onderbroken!");
         }
     }
 
     private void InsertToDatabase() {
         Database database = new Database();
-        try{
+        try {
             new Database().execute().get();
-            for(com.beerfinder.beerfinder.Location location: LocationsList) {
+            for (com.beerfinder.beerfinder.Location location : LocationsList) {
 
                 database.insertLocationIntoDatabase(location);
 
             }
             database.closeDatabase();
 
-        }catch(ExecutionException ex){
+        } catch (ExecutionException ex) {
             Log.i("Tag", "Database ophalen onderbroken!");
 
-        }catch(InterruptedException ex){
+        } catch (InterruptedException ex) {
             Log.i("Tag", "Database ophalen onderbroken!");
         }
 
@@ -165,7 +166,7 @@ public class MapActivity extends FragmentActivity {
     }
 
     private void setMarkers() {
-        for(com.beerfinder.beerfinder.Location location: LocationsList ){
+        for (com.beerfinder.beerfinder.Location location : LocationsList) {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLat(), location.getLon()))
                     .title(location.getName()).icon(BitmapDescriptorFactory.fromBitmap(location.getIcon())));
@@ -247,8 +248,34 @@ public class MapActivity extends FragmentActivity {
         }
     }
 
+    private void startInfoPage(int position)
+    {
+        Intent intent = new Intent(getApplicationContext(), LocationInfo_activity.class);
+        com.beerfinder.beerfinder.Location info = LocationsList.get(position);
+        intent.putExtra("Name", info.getName());
+        intent.putExtra("Type",info.getType());
+        intent.putExtra("Address", info.getAddress());
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        String id = marker.getId();
+
+        id = id.replaceFirst("m", "");
+        int position = Integer.parseInt(id);
+        Log.d("loc forloop", " id = " + id);
+
+        startInfoPage(position);
+
+        //handle click here
+        return false;
+    }
+
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
+        mMap.setOnMarkerClickListener(this);
+
 
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
@@ -279,6 +306,7 @@ public class MapActivity extends FragmentActivity {
             setLocation();
         }
     }
+
 
     public void setLocation() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -314,21 +342,19 @@ public class MapActivity extends FragmentActivity {
 //        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
     }
 
-    public static int[] convertIntegers(List<Integer> integers)
-    {
+    public static int[] convertIntegers(List<Integer> integers) {
         int[] ret = new int[integers.size()];
         Iterator<Integer> iterator = integers.iterator();
-        for (int i = 0; i < ret.length; i++)
-        {
+        for (int i = 0; i < ret.length; i++) {
             ret[i] = iterator.next().intValue();
         }
         return ret;
     }
 
-    private void setListview(){
+    private void setListview() {
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
 
-        for(com.beerfinder.beerfinder.Location location: LocationsList ){
+        for (com.beerfinder.beerfinder.Location location : LocationsList) {
             nameList.add(location.getName());
             imageList.add(location.getIcon());
         }
@@ -345,15 +371,20 @@ public class MapActivity extends FragmentActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
+                                    final int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
+                view.animate().setDuration(500).alpha(0)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                LocationsList.remove(item);
+                                //LocationsList.remove(item);
                                 nameImgAdapter.notifyDataSetChanged();
                                 view.setAlpha(1);
+
+                                startInfoPage(position);
+
+
+
                             }
                         });
             }

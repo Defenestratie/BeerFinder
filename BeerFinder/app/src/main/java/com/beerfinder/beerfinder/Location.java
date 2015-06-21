@@ -16,7 +16,7 @@ public class Location {
     private double lat;
     private double lon;
     private String open_now = "Onbekend";
-    private String adres =  null;
+    private String address =  null;
     private Bitmap icon = null;
 
 //    public Location(String type, String name, String ID, String adress, String phoneNumber, String website){
@@ -49,17 +49,17 @@ public class Location {
         this.lat = lat;
         this.lon = lon;
         this.open_now = open_now;
-        this.adres = adres;
+        this.address = adres;
     }
 
-    public Location(String ID,String name, double lat, double lon, String type, String open_now, String adres, Bitmap icon) {
+    public Location(String ID,String name, double lat, double lon, String type, String open_now, String address, Bitmap icon) {
         this.type = type;
         this.name = name;
         this.ID = ID;
         this.lat = lat;
         this.lon = lon;
         this.open_now = open_now;
-        this.adres = adres;
+        this.address = address;
         this.icon = icon;
     }
 
@@ -86,6 +86,12 @@ public class Location {
     public void setLat(double lat) {
         this.lat = lat;
     }
+
+    public String getAddress()
+    {
+        return address;
+    }
+
 
     public BitmapDescriptor getTypeIcon(Context context) {
         String imageName = this.getType();
