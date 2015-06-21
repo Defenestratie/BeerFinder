@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
-
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static double myLatitude = 0;
     public static double myLongitude = 0;
@@ -51,6 +51,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
 
         setUpMapIfNeeded();
