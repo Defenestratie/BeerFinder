@@ -11,12 +11,15 @@ import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -54,20 +57,25 @@ public class MapActivity extends FragmentActivity {
         //Json call
         SetJsonObject();
         //Json uitpakken
+
         getLocationList();
         Log.i("Tag", "List opgehaald.");
         if (LocationsList.isEmpty() ){
             Log.i("Tag", "Arraylist leeg.");
 
         } else {
-
             setMarkers();
             Log.i("Tag", "Markers geplaatst");
-            setListview();
-            Log.i("Tag", "Listview gemaakt.");
+
+            new Thread(new Runnable() {
+                public void run() {
+                    setListview();
+                    Log.i("Tag", "Listview gemaakt.");
+                }
+            }).start();
+
             InsertToDatabase();
         }
-
 
 //        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //
@@ -160,7 +168,7 @@ public class MapActivity extends FragmentActivity {
         for(com.beerfinder.beerfinder.Location location: LocationsList ){
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLat(), location.getLon()))
-                    .title(location.getName()).icon(location.getTypeIcon(this)));
+                    .title(location.getName()).icon(BitmapDescriptorFactory.fromBitmap(location.getIcon())));
         }
     }
 
@@ -303,7 +311,7 @@ public class MapActivity extends FragmentActivity {
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
+//        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
     }
 
     public static int[] convertIntegers(List<Integer> integers)
@@ -321,8 +329,8 @@ public class MapActivity extends FragmentActivity {
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
 
         for(com.beerfinder.beerfinder.Location location: LocationsList ){
-                nameList.add(location.getName());
-                imageList.add(location.getIcon());
+            nameList.add(location.getName());
+            imageList.add(location.getIcon());
         }
 
         staticNameList = new String[nameList.size()];
@@ -332,6 +340,25 @@ public class MapActivity extends FragmentActivity {
         staticImageList = imageList.toArray(staticImageList);
 
         nameImgAdapter = new CustomList(this, staticNameList, staticImageList);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view,
+                                    int position, long id) {
+                final String item = (String) parent.getItemAtPosition(position);
+                view.animate().setDuration(2000).alpha(0)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                LocationsList.remove(item);
+                                nameImgAdapter.notifyDataSetChanged();
+                                view.setAlpha(1);
+                            }
+                        });
+            }
+
+        });
 
 //        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_single, LocationsList);
         listview.setAdapter(nameImgAdapter);
