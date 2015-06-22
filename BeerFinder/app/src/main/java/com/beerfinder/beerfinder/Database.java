@@ -25,8 +25,6 @@ public class Database extends AsyncTask<Void, Void, Void>{
     protected Void doInBackground(Void... params) {
         connectToDatabase();
         useDatabase();
-        if(params[0].equals("insert location")){}
-
         return null;
     }
 
@@ -83,11 +81,15 @@ public class Database extends AsyncTask<Void, Void, Void>{
         try {
             statement = connection.createStatement();
             String sql = "INSERT INTO locaties"
-                    + "(Locatie_ID, Naam) "
+                    + "(Locatie_ID, Naam, Adres, Type ) "
                     + "VALUES ('"
                     + location.getID()
                     + "', '"
                     + location.getName()
+                    + "', '"
+                    + location.getAddress()
+                    + "', '"
+                    + location.getType()
                     + "');";
             statement.execute(sql);
         }catch(SQLException ex){
