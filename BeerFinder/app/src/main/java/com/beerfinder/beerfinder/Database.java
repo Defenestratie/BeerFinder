@@ -14,8 +14,8 @@ import java.sql.Statement;
  * Created by Elize on 5-6-2015.
  */
 public class Database extends AsyncTask<Void, Void, Void>{
-    private  static Connection connection = null;
-    private  static Statement statement = null;
+    private static Connection connection = null;
+    private static Statement statement = null;
 
     public Database(){
 
@@ -25,6 +25,8 @@ public class Database extends AsyncTask<Void, Void, Void>{
     protected Void doInBackground(Void... params) {
         connectToDatabase();
         useDatabase();
+        if(params[0].equals("insert location")){}
+
         return null;
     }
 

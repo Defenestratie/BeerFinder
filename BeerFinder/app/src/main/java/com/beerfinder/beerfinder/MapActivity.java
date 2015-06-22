@@ -84,19 +84,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     private void InsertToDatabase() {
         Database database = new Database();
-        try {
-            new Database().execute().get();
             for (com.beerfinder.beerfinder.Location location : LocationsList) {
                 database.insertLocationIntoDatabase(location);
             }
             database.closeDatabase();
-
-        } catch (ExecutionException ex) {
-            Log.i("Tag", "Database ophalen onderbroken!");
-
-        } catch (InterruptedException ex) {
-            Log.i("Tag", "Database ophalen onderbroken!");
-        }
     }
 
     public static void getLocationList() {
