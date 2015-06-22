@@ -1,11 +1,13 @@
 package com.beerfinder.beerfinder;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
@@ -186,13 +188,30 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         Intent intent = new Intent(getApplicationContext(), LocationInfo_activity.class);
         com.beerfinder.beerfinder.Location info = LocationsList.get(position);
         intent.putExtra("Name", info.getName());
-        intent.putExtra("Type",info.getType());
+        intent.putExtra("Type", info.getType());
         intent.putExtra("Address", info.getAddress());
+        intent.putExtra("Open", info.getOpen_now());
         startActivity(intent);
     }
 
+    Marker lastMarker = null;
+
+
+
     @Override
     public boolean onMarkerClick(final Marker marker) {
+
+
+        marker.showInfoWindow();
+        Log.d("onMarkerClick", "Started!");
+
+        try{
+            Log.d("onMarkerClick", "marker.getId = " + marker.getId() + " lastMarker.getId = " + lastMarker.getId());
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
 
         String id = marker.getId();
 
@@ -200,7 +219,13 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         int position = Integer.parseInt(id);
         Log.d("loc forloop", " id = " + id);
 
-        startInfoPage(position);
+        if(lastMarker != null && marker.getId().equals(lastMarker.getId()))
+        {
+            startInfoPage(position);
+        }
+
+        lastMarker = marker;
+
 
         //handle click here
         return false;
@@ -299,31 +324,32 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         nameImgAdapter = new CustomList(this, staticNameList, staticImageList);
 
-//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, final View view,
-//                                    final int position, long id) {
-//                final String item = (String) parent.getItemAtPosition(position);
-//                view.animate().setDuration(500).alpha(0)
-//                        .withEndAction(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                //LocationsList.remove(item);
-//                                nameImgAdapter.notifyDataSetChanged();
-//                                view.setAlpha(1);
-//
-//                                startInfoPage(position);
-//
-//
-//
-//                            }
-//                        });
-//            }
-//
-//        });
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-//        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_single, LocationsList);
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view,
+                                    final int position, long id) {
+                final String item = (String) parent.getItemAtPosition(position);
+                view.animate().setDuration(500).alpha(0)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                //LocationsList.remove(item);
+                                nameImgAdapter.notifyDataSetChanged();
+                                view.setAlpha(1);
+
+                                startInfoPage(position);
+
+
+
+                            }
+                        });
+            }
+
+        });
+
+
         listview.setAdapter(nameImgAdapter);
     }
 
