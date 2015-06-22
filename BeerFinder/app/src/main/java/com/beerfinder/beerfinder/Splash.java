@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Florian on 21-6-2015.
  */
 public class Splash extends Activity {
-    private final int SPLASH_DURATION = 1000;
+    private final int SPLASH_DURATION = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,21 +24,61 @@ public class Splash extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
 
-        new SplashTask().execute();
-//
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Intent splashIntent = new Intent(Splash.this, MapActivity.class);
-//                Splash.this.startActivity(splashIntent);
-//                Splash.this.finish();
-//            }
-//        }, SPLASH_DURATION);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Log.i("Tag", "Starting task...");
+                    gatherData();
+
+                } finally {
+                    Intent intent = new Intent(Splash.this, MapActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                }
+            }
+        }, SPLASH_DURATION);
 
     }
 
+    private void gatherData(){
+        try {
+
+            getUserLocation();
+            //Json call
+            MapActivity.setJsonObject();
+            Log.d("Tag", "Json opgehaald");
+            //Json uitpakken
+            MapActivity.getLocationList();
+            Log.d("Tag", "List opgehaald.");
+            //Verbinden met database
+            new Database().execute().get();
+            Log.d("Tag", "Database verbinden");
 
 
+        } catch (ExecutionException ex) {
+            Log.i("Tag", "Database ophalen onderbroken!");
+
+        } catch (InterruptedException ex) {
+            Log.i("Tag", "Database ophalen onderbroken!");
+        } catch (Exception ex) {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria, true);
+            android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
+
+
+            Log.d("location test", "location =  " + myLocation);
+
+            if (myLocation == null) {
+
+            }
+        }
+
+
+    }
 
     private void getUserLocation() {
 
@@ -63,62 +103,4 @@ public class Splash extends Activity {
         MapActivity.myLongitude = myLocation.getLongitude();
     }
 
-
-    private class SplashTask extends AsyncTask<Void, Void, Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-
-                getUserLocation();
-                //Json call
-                MapActivity.setJsonObject();
-                Log.d("Tag", "Json opgehaald");
-                //Json uitpakken
-                MapActivity.getLocationList();
-                Log.d("Tag", "List opgehaald.");
-                //Verbinden met database
-                new Database().execute().get();
-                Log.d("Tag", "Database verbinden");
-
-
-            } catch (ExecutionException ex) {
-                Log.i("Tag", "Database ophalen onderbroken!");
-
-            } catch (InterruptedException ex) {
-                Log.i("Tag", "Database ophalen onderbroken!");
-            } catch (Exception ex) {
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                Criteria criteria = new Criteria();
-                String provider = locationManager.getBestProvider(criteria, true);
-                android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
-
-
-                Log.d("location test", "location =  " + myLocation);
-
-                if (myLocation == null) {
-
-                }
-            }
-
-
-            return null;
-
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Intent intent = new Intent(Splash.this, MapActivity.class);
-            startActivity(intent);
-            finish();
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-    }
 }
