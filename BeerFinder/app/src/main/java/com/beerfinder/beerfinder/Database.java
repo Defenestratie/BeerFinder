@@ -47,7 +47,6 @@ public class Database extends AsyncTask<Void, Void, Void>{
             Log.d("Database","U heeft verbinding");
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Een SQLException..." + ex.getMessage());
-
         }catch(ClassNotFoundException ex){
             Log.i(getClass().toString(), "ClassNotFoundException..." + ex.getMessage());
         }catch(Exception ex){

@@ -122,20 +122,20 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
                 //the adress of the location
                 String adres = jsonArray.getJSONObject(i).get("vicinity").toString();
 
-                //icon of the location
-                String iconUrl = jsonArray.getJSONObject(i).get("icon").toString();
+//                //icon of the location
+//                String iconUrl = jsonArray.getJSONObject(i).get("icon").toString();
 
-                Bitmap mIcon11 = null;
-                try {
-//                    mIcon11 = BitmapFactory.decodeStream((InputStream) new URL(iconUrl).getContent());
-                    InputStream in = new java.net.URL(iconUrl).openStream();
-                    mIcon11 = BitmapFactory.decodeStream(in);
-                } catch (Exception e) {
-                    Log.d("tag", "icon niet gepakt");
-                }
-                Bitmap icon = mIcon11;
+//                Bitmap mIcon11 = null;
+//                try {
+////                    mIcon11 = BitmapFactory.decodeStream((InputStream) new URL(iconUrl).getContent());
+//                    InputStream in = new java.net.URL(iconUrl).openStream();
+//                    mIcon11 = BitmapFactory.decodeStream(in);
+//                } catch (Exception e) {
+//                    Log.d("tag", "icon niet gepakt");
+//                }
+//                Bitmap icon = mIcon11;
 
-                Location location = new Location(placeID, name, latitudeLocation, longitudeLocation, type, open_now, adres, icon);
+                Location location = new Location(placeID, name, latitudeLocation, longitudeLocation, type, open_now, adres);
                 Log.i("Tag", name);
                 arrayListLocations.add(location);
 
@@ -149,28 +149,14 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
 
 
         }finally{
-            //waitForList();
             return arrayListLocations;
         }
 
     }
 
-    private static void waitForList() {
-        if(arrayListLocations.isEmpty()){
-            try {
-                Thread.sleep(500);
-
-            }catch(InterruptedException ex){
-                Log.i("Tag", "Interupted..");
-
-            }
-        }
-    }
-
 
     @Override
     protected Void doInBackground(String... params) {
-        //setJsonObject(Double.toString(MapActivity.myLatitude), Double.toString(MapActivity.myLongitude));
         setJsonObject(params[0], params[1]);
         return null;
     }

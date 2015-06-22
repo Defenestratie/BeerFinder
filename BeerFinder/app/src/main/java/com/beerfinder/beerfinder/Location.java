@@ -2,6 +2,7 @@ package com.beerfinder.beerfinder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -42,7 +43,7 @@ public class Location {
         this.lon = lon;
     }
 
-    public Location(String ID,String name, double lat, double lon, String type, String open_now, String adres ) {
+    public Location(String ID,String name, double lat, double lon, String type, String open_now, String adres) {
         this.type = type;
         this.name = name;
         this.ID = ID;
@@ -92,11 +93,17 @@ public class Location {
         return address;
     }
 
-
     public BitmapDescriptor getTypeIcon(Context context) {
-        String imageName = this.getType();
         int imageID = context.getResources().getIdentifier(this.getType() , "drawable", context.getPackageName());
         return BitmapDescriptorFactory.fromResource(imageID);
+    }
+
+    public Bitmap getListTypeIcon(Context context){
+        int imageID = context.getResources().getIdentifier(this.getType() + "list" , "drawable", context.getPackageName());
+        Bitmap iconForList = BitmapFactory.decodeResource(context.getResources(),
+                imageID);
+
+        return iconForList;
     }
 
     public Bitmap getIcon() {

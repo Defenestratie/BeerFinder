@@ -35,18 +35,13 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static double myLatitude = 0;
     public static double myLongitude = 0;
-    ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
+    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
     CustomList nameImgAdapter;
 
-    ListView list;
     ArrayList<String> nameList = new ArrayList<String>();
     ArrayList<Bitmap> imageList = new ArrayList<Bitmap>();
     String[] staticNameList;
     Bitmap[] staticImageList;
-
-//    String[] nameList;
-//    Integer[] imageList;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +51,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         setUpMapIfNeeded();
         Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
-        //Json call
-        SetJsonObject();
-        //Json uitpakken
 
-        getLocationList();
-        Log.i("Tag", "List opgehaald.");
         if (LocationsList.isEmpty()) {
             Log.i("Tag", "Arraylist leeg.");
 
@@ -79,55 +69,9 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             InsertToDatabase();
         }
 
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view,
-//                                    int position, long id) {
-//                Toast.makeText(MainActivity.this, "You Clicked at " + web[+position], Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-
-//        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-//                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-//                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-//                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-//                "Android", "iPhone", "WindowsMobile" };
-//
-//        final ArrayList<String> list = new ArrayList<String>();
-//        for (int i = 0; i < values.length; ++i) {
-//            list.add(values[i]);
-//        }
-
-        //Voor de exception over de NetworkOnMainThreadException
-
-//        final StableArrayAdapter adapter = new StableArrayAdapter(this,
-//                android.R.layout.simple_list_item_1, LocationsList);
-
-
-//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, final View view,
-//                                    int position, long id) {
-//                final String item = (String) parent.getItemAtPosition(position);
-//                view.animate().setDuration(2000).alpha(0)
-//                        .withEndAction(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                LocationsList.remove(item);
-//                                adapter.notifyDataSetChanged();
-//                                view.setAlpha(1);
-//                            }
-//                        });
-//            }
-//
-//        });
-
     }
 
-    private void SetJsonObject() {
+    public static void setJsonObject() {
         try {
             new JsonToDatabase().execute(Double.toString(myLatitude), Double.toString(myLongitude)).get();
         } catch (ExecutionException ex) {
@@ -143,9 +87,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         try {
             new Database().execute().get();
             for (com.beerfinder.beerfinder.Location location : LocationsList) {
-
                 database.insertLocationIntoDatabase(location);
-
             }
             database.closeDatabase();
 
@@ -155,10 +97,9 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         } catch (InterruptedException ex) {
             Log.i("Tag", "Database ophalen onderbroken!");
         }
-
     }
 
-    private void getLocationList() {
+    public static void getLocationList() {
         StrictMode.ThreadPolicy policy = new
                 StrictMode.ThreadPolicy.Builder()
                 .permitAll().build();
@@ -170,7 +111,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         for (com.beerfinder.beerfinder.Location location : LocationsList) {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLat(), location.getLon()))
-                    .title(location.getName()).icon(BitmapDescriptorFactory.fromBitmap(location.getIcon())));
+                    .title(location.getName()).icon(location.getTypeIcon(this)));
         }
     }
 
@@ -277,7 +218,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     private void setUpMap() {
         mMap.setOnMarkerClickListener(this);
 
-
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
 
@@ -293,7 +233,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        if (myLocation == null) {
+        if (myLocation == null || (myLatitude != 0 && myLongitude != 0)){
             Log.d("Location provider", "No  location detected!");
             try {
                 Thread.sleep(500);
@@ -357,7 +297,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         for (com.beerfinder.beerfinder.Location location : LocationsList) {
             nameList.add(location.getName());
-            imageList.add(location.getIcon());
+            imageList.add(location.getListTypeIcon(this));
         }
 
         staticNameList = new String[nameList.size()];
@@ -368,33 +308,35 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         nameImgAdapter = new CustomList(this, staticNameList, staticImageList);
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view,
-                                    final int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(500).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                //LocationsList.remove(item);
-                                nameImgAdapter.notifyDataSetChanged();
-                                view.setAlpha(1);
-
-                                startInfoPage(position);
-
-
-
-                            }
-                        });
-            }
-
-        });
+//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, final View view,
+//                                    final int position, long id) {
+//                final String item = (String) parent.getItemAtPosition(position);
+//                view.animate().setDuration(500).alpha(0)
+//                        .withEndAction(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                //LocationsList.remove(item);
+//                                nameImgAdapter.notifyDataSetChanged();
+//                                view.setAlpha(1);
+//
+//                                startInfoPage(position);
+//
+//
+//
+//                            }
+//                        });
+//            }
+//
+//        });
 
 //        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_single, LocationsList);
         listview.setAdapter(nameImgAdapter);
     }
+
+
 }
 
 
