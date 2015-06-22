@@ -34,6 +34,8 @@ public class Splash extends Activity {
         try {
 
             getUserLocation();
+
+
             //Json call
             MapActivity.setJsonObject();
             Log.d("Tag", "Json opgehaald");
@@ -43,8 +45,8 @@ public class Splash extends Activity {
             //Verbinden met database
             new Database().execute().get();
             Log.d("Tag", "Database verbinden");
-            Intent splashIntent = new Intent(Splash.this, MapActivity.class);
-            startActivity(splashIntent);
+
+
             //this.finish();
 
         } catch (ExecutionException ex) {
@@ -52,6 +54,21 @@ public class Splash extends Activity {
 
         } catch (InterruptedException ex) {
             Log.i("Tag", "Database ophalen onderbroken!");
+        }
+        catch (Exception ex)
+        {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria, true);
+            android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
+
+
+            Log.d("location test", "location =  " + myLocation);
+
+            if(myLocation == null)
+            {
+
+            }
         }
 
     }
@@ -71,6 +88,8 @@ public class Splash extends Activity {
         android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
 
         Log.d("Location provider", "" + locationManager.getAllProviders().size());
+
+        
 
         // Get latitude of the current location
         MapActivity.myLatitude = myLocation.getLatitude();

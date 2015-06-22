@@ -64,6 +64,11 @@ public class Location {
         this.icon = icon;
     }
 
+    public String getOpen_now()
+    {
+        return open_now;
+    }
+
     public String getID() {
         return ID;
     }

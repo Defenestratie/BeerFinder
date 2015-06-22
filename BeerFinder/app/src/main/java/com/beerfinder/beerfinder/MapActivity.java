@@ -199,15 +199,19 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         intent.putExtra("Name", info.getName());
         intent.putExtra("Type", info.getType());
         intent.putExtra("Address", info.getAddress());
+        intent.putExtra("Open", info.getOpen_now());
         startActivity(intent);
     }
 
     Marker lastMarker = null;
 
+
+
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
 
+        marker.showInfoWindow();
         Log.d("onMarkerClick", "Started!");
 
         try{
