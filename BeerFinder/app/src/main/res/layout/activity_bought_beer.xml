@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.beerfinder.beerfinder.BoughtBeer"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/beerBrandEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:textSize = "24sp"
+        android:hint="Enter the beer brand you bought"
+         />
+
+    <EditText
+        android:id="@+id/addBeerEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize = "24sp"
+        android:hint="Enter the beer type you bought"
+        />
+
+    <Button
+        android:id="@+id/addBeerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize = "18sp"
+        android:text="Add to database"
+        />
+
+    <ListView
+        android:id = "@+id/beersAtLocationList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
