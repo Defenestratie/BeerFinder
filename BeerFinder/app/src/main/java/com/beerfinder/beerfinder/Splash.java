@@ -4,20 +4,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.*;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
+import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Florian on 21-6-2015.
  */
-public class Splash extends Activity {
+public class Splash extends Activity implements LocationListener {
     private final int SPLASH_DURATION = 2000;
-
+    LocationManager locationmanager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,26 +83,91 @@ public class Splash extends Activity {
     }
 
     private void getUserLocation() {
+//
+//        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//
+//        // Create a criteria object to retrieve provider
+//        Criteria criteria = new Criteria();
+//
+//        // Get the name of the best provider
+//        String provider = locationManager.getBestProvider(criteria, true);
+//
+//        // Get Current Location
+//        android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
+//
+//        Log.d("Location provider", "" + locationManager.getAllProviders().size());
+//
+//
+//        // Get latitude of the current location
+//        MapActivity.myLatitude = myLocation.getLatitude();
+//
+//        // Get longitude of the current location
+//        MapActivity.myLongitude = myLocation.getLongitude();
 
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        // Create a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
+            locationmanager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
-        // Get the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
+            Criteria criteria =new Criteria();
 
-        // Get Current Location
-        android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
+            String provider=locationmanager.getBestProvider(criteria, true);
 
-        Log.d("Location provider", "" + locationManager.getAllProviders().size());
+            if(provider != null & !provider.equals(""))
 
+            {
 
-        // Get latitude of the current location
-        MapActivity.myLatitude = myLocation.getLatitude();
+                Location location = locationmanager.getLastKnownLocation(provider);
 
-        // Get longitude of the current location
-        MapActivity.myLongitude = myLocation.getLongitude();
+                locationmanager.requestLocationUpdates(provider,2000,1,this);
+
+                if(location != null)
+
+                {
+
+                    onLocationChanged(location);
+
+                }
+
+                else{
+
+                    Toast.makeText(getApplicationContext(),"location not found", Toast.LENGTH_LONG ).show();
+
+                }
+
+            }
+
+            else
+
+            {
+
+                Toast.makeText(getApplicationContext(),"Provider is null",Toast.LENGTH_LONG).show();
+
+            }
     }
 
-}
+
+        @Override
+        public void onLocationChanged(Location location) {
+            // Get latitude of the current location
+            MapActivity.myLatitude = location.getLatitude();
+
+            // Get longitude of the current location
+            MapActivity.myLongitude = location.getLongitude();
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    }
+
+
