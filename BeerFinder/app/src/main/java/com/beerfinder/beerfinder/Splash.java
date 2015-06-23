@@ -47,8 +47,20 @@ public class Splash extends Activity implements LocationListener {
 
     private void gatherData(){
         try {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    getUserLocation();
+                }
+            });
+            thread.start();
+            thread.join();
 
-            getUserLocation();
+            while(MapActivity.myLongitude == 0.0 && MapActivity.myLatitude == 0.0){
+                Toast.makeText(getApplicationContext(), "Locatie Ophalen...", Toast.LENGTH_LONG);
+                Thread.sleep(1000);
+            }
+
             //Json call
             MapActivity.setJsonObject();
             Log.d("Tag", "Json opgehaald");
