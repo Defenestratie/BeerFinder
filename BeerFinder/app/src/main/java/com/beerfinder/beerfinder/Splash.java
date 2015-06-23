@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
@@ -17,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by Florian on 21-6-2015.
  */
-public class Splash extends Activity implements LocationListener {
+public class Splash extends Activity{
     private final int SPLASH_DURATION = 2000;
     LocationManager locationmanager;
     @Override
@@ -47,20 +48,13 @@ public class Splash extends Activity implements LocationListener {
 
     private void gatherData(){
         try {
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    getUserLocation();
-                }
-            });
-            thread.start();
-            thread.join();
-
-            while(MapActivity.myLongitude == 0.0 && MapActivity.myLatitude == 0.0){
-                Toast.makeText(getApplicationContext(), "Locatie Ophalen...", Toast.LENGTH_LONG);
-                Thread.sleep(1000);
-            }
-
+//
+//            while(MapActivity.myLongitude == 0.0 && MapActivity.myLatitude == 0.0){
+//                Toast.makeText(getApplicationContext(), "Locatie Ophalen...", Toast.LENGTH_LONG);
+//                Thread.sleep(1000);
+//            }
+            //getUserLocation();
+            new getUserData().execute().get();
             //Json call
             MapActivity.setJsonObject();
             Log.d("Tag", "Json opgehaald");
@@ -94,76 +88,19 @@ public class Splash extends Activity implements LocationListener {
 
     }
 
-    private void getUserLocation() {
-//
-//        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//
-//        // Create a criteria object to retrieve provider
-//        Criteria criteria = new Criteria();
-//
-//        // Get the name of the best provider
-//        String provider = locationManager.getBestProvider(criteria, true);
-//
-//        // Get Current Location
-//        android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
-//
-//        Log.d("Location provider", "" + locationManager.getAllProviders().size());
-//
-//
-//        // Get latitude of the current location
-//        MapActivity.myLatitude = myLocation.getLatitude();
-//
-//        // Get longitude of the current location
-//        MapActivity.myLongitude = myLocation.getLongitude();
 
 
-            locationmanager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
-            Criteria criteria =new Criteria();
 
-            String provider=locationmanager.getBestProvider(criteria, true);
 
-            if(provider != null & !provider.equals(""))
 
-            {
 
-                Location location = locationmanager.getLastKnownLocation(provider);
-
-                locationmanager.requestLocationUpdates(provider,2000,1,this);
-
-                if(location != null)
-
-                {
-
-                    onLocationChanged(location);
-
-                }
-
-                else{
-
-                    Toast.makeText(getApplicationContext(),"location not found", Toast.LENGTH_LONG ).show();
-
-                }
-
-            }
-
-            else
-
-            {
-
-                Toast.makeText(getApplicationContext(),"Provider is null",Toast.LENGTH_LONG).show();
-
-            }
-    }
-
+    private class getUserData extends AsyncTask<Void, Void, Void> implements LocationListener{
 
         @Override
-        public void onLocationChanged(Location location) {
-            // Get latitude of the current location
-            MapActivity.myLatitude = location.getLatitude();
-
-            // Get longitude of the current location
-            MapActivity.myLongitude = location.getLongitude();
+        protected Void doInBackground(Void... params) {
+            getUserLocation();
+            return null;
         }
 
         @Override
@@ -180,6 +117,79 @@ public class Splash extends Activity implements LocationListener {
         public void onProviderDisabled(String provider) {
 
         }
+
+        private void getUserLocation() {
+
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            // Create a criteria object to retrieve provider
+            Criteria criteria = new Criteria();
+
+            // Get the name of the best provider
+            String provider = locationManager.getBestProvider(criteria, true);
+
+            // Get Current Location
+            android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
+
+            Log.d("Location provider", "" + locationManager.getAllProviders().size());
+
+
+            // Get latitude of the current location
+            MapActivity.myLatitude = myLocation.getLatitude();
+
+            // Get longitude of the current location
+            MapActivity.myLongitude = myLocation.getLongitude();
+
+//
+//            locationmanager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
+//
+//            Criteria criteria =new Criteria();
+//
+//            String provider=locationmanager.getBestProvider(criteria, true);
+//
+//            if(provider != null & !provider.equals(""))
+//
+//            {
+//
+//                Location location = locationmanager.getLastKnownLocation(provider);
+//
+//                locationmanager.requestLocationUpdates(provider,2000,1,this);
+//
+//                if(location != null)
+//
+//                {
+//
+//                    onLocationChanged(location);
+//
+//                }
+//
+//                else{
+//
+//                    Toast.makeText(getApplicationContext(),"location not found", Toast.LENGTH_LONG ).show();
+//
+//                }
+//
+//            }
+//
+//            else
+//
+//            {
+//
+//                Toast.makeText(getApplicationContext(),"Provider is null",Toast.LENGTH_LONG).show();
+//
+//            }
+        }
+
+
+        @Override
+        public void onLocationChanged(Location location) {
+            // Get latitude of the current location
+            MapActivity.myLatitude = location.getLatitude();
+
+            // Get longitude of the current location
+            MapActivity.myLongitude = location.getLongitude();
     }
+    }
+}
 
 

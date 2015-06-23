@@ -21,6 +21,8 @@ import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,7 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
+public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static double myLatitude = 0;
     public static double myLongitude = 0;
@@ -51,25 +53,12 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
 
-        setUpMapIfNeeded();
+        //setUpMapIfNeeded();
         Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
 
-        if (LocationsList.isEmpty()) {
-            Log.i("Tag", "Arraylist leeg.");
-
-        } else {
-            setMarkers();
-            Log.i("Tag", "Markers geplaatst");
-
-            new Thread(new Runnable() {
-                public void run() {
-                    setListview();
-                    Log.i("Tag", "Listview gemaakt.");
-                }
-            }).start();
-
-            InsertToDatabase();
-        }
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(MapActivity.this);
 
     }
 
@@ -101,11 +90,32 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     }
 
     private void setMarkers() {
+
         for (com.beerfinder.beerfinder.Location location : LocationsList) {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLat(), location.getLon()))
                     .title(location.getName()).icon(location.getTypeIcon(this)));
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if (LocationsList.isEmpty()) {
+            Log.i("Tag", "Arraylist leeg.");
+            setJsonObject();
+            getLocationList();
+        }
+        setMarkers();
+        Log.i("Tag", "Markers geplaatst");
+
+        new Thread(new Runnable() {
+            public void run() {
+                setListview();
+                Log.i("Tag", "Listview gemaakt.");
+            }
+        }).start();
+
+        InsertToDatabase();
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -296,7 +306,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-//        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
+        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
     }
 
     public static int[] convertIntegers(List<Integer> integers) {

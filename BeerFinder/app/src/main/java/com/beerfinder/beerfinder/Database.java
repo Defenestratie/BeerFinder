@@ -44,7 +44,7 @@ public class Database extends AsyncTask<Void, Void, Void>{
                     "Bierapp"
             );
 
-            Log.d("Database","U heeft verbinding");
+            Log.d("Database", "U heeft verbinding");
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Een SQLException..." + ex.getMessage());
         }catch(ClassNotFoundException ex){
@@ -74,11 +74,15 @@ public class Database extends AsyncTask<Void, Void, Void>{
             }
         }catch(SQLException ex){
             Log.i("", "A SQLException... " + ex.getMessage());
+        }catch(NullPointerException ex){
+            Log.d("Tag", "Database is null");
+
         }
     }// end of closeDatabase()
 
     public void insertLocationIntoDatabase(Location location){
         try {
+
             statement = connection.createStatement();
             String sql = "INSERT INTO locaties"
                     + "(Locatie_ID, Naam, Adres, Type ) "
@@ -94,6 +98,8 @@ public class Database extends AsyncTask<Void, Void, Void>{
             statement.execute(sql);
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
+        }catch(NullPointerException ex){
+            Log.i("Tag", "Data niet toegevoegd: Nullpointer exception");
         }
 
     }
