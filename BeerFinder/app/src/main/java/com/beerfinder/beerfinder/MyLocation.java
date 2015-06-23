@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MyLocation {
     Timer timer1;
@@ -20,6 +21,8 @@ public class MyLocation {
 
     public boolean getLocation(Context context, LocationResult result)
     {
+
+        Log.d("my location", "start");
         //I use LocationResult callback class to pass location value from MyLocation to user code.
         locationResult=result;
         if(lm==null)
@@ -39,6 +42,7 @@ public class MyLocation {
             lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
         timer1=new Timer();
         timer1.schedule(new GetLastLocation(), 20000);
+        Log.d("my location", "end result");
         return true;
     }
 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,10 +22,8 @@ import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -37,8 +36,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    public static double myLatitude = 51.9172613;
-    public static double myLongitude = 4.4844436;
+    public static double myLatitude;
+    public static double myLongitude;
     private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
     CustomList nameImgAdapter;
 
@@ -62,6 +61,33 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     }
 
+
+
+    public LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(android.location.Location location) {
+            myLatitude = location.getLatitude();
+            myLongitude = location.getLongitude();
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
+    };
+
     public static void setJsonObject() {
         try {
             new JsonToDatabase().execute(Double.toString(myLatitude), Double.toString(myLongitude)).get();
@@ -71,14 +97,15 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         } catch (InterruptedException ex) {
             Log.i("Tag", "JsonObject ophalen onderbroken!");
         }
+
     }
 
     private void InsertToDatabase() {
         Database database = new Database();
-            for (com.beerfinder.beerfinder.Location location : LocationsList) {
-                database.insertLocationIntoDatabase(location);
-            }
-            Database.closeDatabase();
+        for (com.beerfinder.beerfinder.Location location : LocationsList) {
+            database.insertLocationIntoDatabase(location);
+        }
+        Database.closeDatabase();
     }
 
     public static void getLocationList() {
@@ -100,8 +127,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         if (LocationsList.isEmpty()) {
             Log.i("Tag", "Arraylist leeg.");
+            setLocation();
             setJsonObject();
             getLocationList();
         }
@@ -116,6 +145,11 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }).start();
 
         InsertToDatabase();
+    }
+
+    public void onLocationChanged(Location location) {
+        // Called when a new location is found by the network location provider.
+
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -193,8 +227,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }
     }
 
-    private void startInfoPage(int position)
-    {
+    private void startInfoPage(int position) {
         Intent intent = new Intent(getApplicationContext(), LocationInfo_activity.class);
         com.beerfinder.beerfinder.Location info = LocationsList.get(position);
         intent.putExtra("Name", info.getName());
@@ -207,7 +240,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     Marker lastMarker = null;
 
 
-
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
@@ -215,11 +247,9 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         marker.showInfoWindow();
         Log.d("onMarkerClick", "Started!");
 
-        try{
+        try {
             Log.d("onMarkerClick", "marker.getId = " + marker.getId() + " lastMarker.getId = " + lastMarker.getId());
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -229,8 +259,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         int position = Integer.parseInt(id);
         Log.d("loc forloop", " id = " + id);
 
-        if(lastMarker != null && marker.getId().equals(lastMarker.getId()))
-        {
+        if (lastMarker != null && marker.getId().equals(lastMarker.getId())) {
             startInfoPage(position);
         }
 
@@ -250,6 +279,8 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         // Get LocationManager object from System Service LOCATION_SERVICE
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
         // Create a criteria object to retrieve provider
         Criteria criteria = new Criteria();
 
@@ -259,7 +290,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        if (myLocation == null || (myLatitude != 0 && myLongitude != 0)){
+        if (myLocation == null || (myLatitude != 0 && myLongitude != 0)) {
             Log.d("Location provider", "No  location detected!");
             try {
                 Thread.sleep(500);
@@ -287,23 +318,38 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         String provider = locationManager.getBestProvider(criteria, true);
 
 
-
         // Get Current Location
+        Log.d("get current location", "start");
         final Location[] myLocation = {locationManager.getLastKnownLocation(provider)};
-        if(myLocation[0] == null){
-        MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
-            @Override
-            public void gotLocation(Location location){
-                myLocation[0] = location;
-            }
-        };
+        myLocation[0] = locationManager.getLastKnownLocation(provider);
+        Log.d("get current location", "getLastKnowLocation try " + myLocation[0]);
+        if (myLocation[0] == null) {
+            Log.d("get current location", "inside if loop");
+            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
+                @Override
+                public void gotLocation(Location location) {
+                    Log.d("got location", "Got location" + location);
+                    myLocation[0] = location;
+                }
+            };
 
-        MyLocation myLocation2 = new MyLocation();
-        myLocation2.getLocation(this, locationResult);
+            Log.d("get current location", "after if loop " + myLocation[0]);
+
+            MyLocation myLocation2 = new MyLocation();
+            myLocation2.getLocation(this, locationResult);
         }
 
         Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
+
+        while(myLocation == null)
+        {
+            try {
+                wait(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
@@ -354,7 +400,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
-                                    final int position,final long id) {
+                                    final int position, final long id) {
 
 
                 final String item = (String) parent.getItemAtPosition(position);
@@ -367,7 +413,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                                 view.setAlpha(1);
 
                                 startInfoPage(position);
-
 
 
                             }

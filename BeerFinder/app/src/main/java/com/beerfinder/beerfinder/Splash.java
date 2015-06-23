@@ -5,27 +5,26 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.*;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Window;
-import android.widget.Toast;
-
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 
 import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Florian on 21-6-2015.
  */
-public class Splash extends Activity{
+public class Splash extends Activity {
     private final int SPLASH_DURATION = 2000;
     LocationManager locationmanager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +40,7 @@ public class Splash extends Activity{
                     gatherData();
 
                 } finally {
-                    Intent intent = new Intent(Splash.this, MapActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                     startActivity(intent);
                     finish();
 
@@ -51,7 +50,7 @@ public class Splash extends Activity{
 
     }
 
-    private void gatherData(){
+    private void gatherData() {
         try {
             new getUserData().execute().get();
             //Json call
@@ -88,24 +87,16 @@ public class Splash extends Activity{
     }
 
 
+    private class getUserData extends AsyncTask<Void, Void, Void> implements LocationListener {
 
-    private class getUserData extends AsyncTask<Void, Void, Void> implements LocationListener{
 
         @Override
         protected Void doInBackground(Void... params) {
+            Looper.prepare();
             try {
                 getUserLocation();
-            }catch(Exception ex){
-                new AlertDialog.Builder(getApplicationContext())
-                        .setTitle("Locatie")
-                        .setMessage("Locatie niet gevonden!")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                System.exit(1);
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+            } catch (Exception ex) {
+
 
             }
             return null;
@@ -128,7 +119,7 @@ public class Splash extends Activity{
 
         private void getUserLocation() {
 
-            LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) Splash.this.getSystemService(Context.LOCATION_SERVICE);
 
             // Create a criteria object to retrieve provider
             Criteria criteria = new Criteria();
@@ -140,8 +131,8 @@ public class Splash extends Activity{
             // Get Current Location
             android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
 
-            if(myLocation.equals(null)){
-               myLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (myLocation.equals(null)) {
+                myLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             }
 
@@ -163,7 +154,7 @@ public class Splash extends Activity{
 
             // Get longitude of the current location
             MapActivity.myLongitude = location.getLongitude();
-    }
+        }
     }
 }
 
