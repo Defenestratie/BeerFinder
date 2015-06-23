@@ -19,6 +19,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -342,10 +343,12 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
 
-        while(myLocation == null)
+        while(myLocation[0] == null)
         {
             try {
-                wait(100);
+                Thread.sleep(100);
+                Log.d("sleep", "sleeping 100 miliseconds");
+                Toast.makeText(getApplicationContext(),"Waiting for location!",Toast.LENGTH_SHORT);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -367,7 +370,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
+        //mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
     }
 
     public static int[] convertIntegers(List<Integer> integers) {
