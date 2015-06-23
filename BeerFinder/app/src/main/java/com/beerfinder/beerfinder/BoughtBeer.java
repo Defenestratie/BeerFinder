@@ -1,6 +1,7 @@
 package com.beerfinder.beerfinder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -27,6 +28,9 @@ public class BoughtBeer extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bought_beer);
+
+        Intent intent = getIntent();
+        place_ID = intent.getStringExtra("locationID");
 
         boughtBeerList = new ArrayList<>();
         ArrayAdapter boughtBeerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, boughtBeerList);
