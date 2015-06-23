@@ -276,6 +276,8 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
 
     public void setLocation() {
+
+
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Create a criteria object to retrieve provider
@@ -284,8 +286,21 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         // Get the name of the best provider
         String provider = locationManager.getBestProvider(criteria, true);
 
+
+
         // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
+        final Location[] myLocation = {locationManager.getLastKnownLocation(provider)};
+        if(myLocation[0] == null){
+        MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
+            @Override
+            public void gotLocation(Location location){
+                myLocation[0] = location;
+            }
+        };
+
+        MyLocation myLocation2 = new MyLocation();
+        myLocation2.getLocation(this, locationResult);
+        }
 
         Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
@@ -293,10 +308,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        myLatitude = myLocation.getLatitude();
+        myLatitude = myLocation[0].getLatitude();
 
         // Get longitude of the current location
-        myLongitude = myLocation.getLongitude();
+        myLongitude = myLocation[0].getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(myLatitude, myLongitude);
