@@ -66,7 +66,7 @@ public class Database extends AsyncTask<Void, Void, Void>{
     }//end of useDatabase()
 
 
-    public void closeDatabase(){
+    public static void closeDatabase(){
         try {
             if(!connection.isClosed()){
                 connection.close();
@@ -120,6 +120,24 @@ public class Database extends AsyncTask<Void, Void, Void>{
         }catch(SQLException ex){
             Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
         }
+
+    }
+
+    public void insertLocationBeer(int BierID, Location location){
+        try {
+            statement = connection.createStatement();
+            String sql = "INSERT INTO locaties_bier"
+                    + "(Locatie_ID, Bier_ID) "
+                    + "VALUES ('"
+                    + location.getID()
+                    + "', '"
+                    + BierID
+                    + "');";
+            statement.execute(sql);
+        }catch(SQLException ex){
+            Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
+        }
+
 
     }
 }

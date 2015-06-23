@@ -1,7 +1,9 @@
 package com.beerfinder.beerfinder;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.*;
 import android.location.Location;
@@ -48,12 +50,6 @@ public class Splash extends Activity{
 
     private void gatherData(){
         try {
-//
-//            while(MapActivity.myLongitude == 0.0 && MapActivity.myLatitude == 0.0){
-//                Toast.makeText(getApplicationContext(), "Locatie Ophalen...", Toast.LENGTH_LONG);
-//                Thread.sleep(1000);
-//            }
-            //getUserLocation();
             new getUserData().execute().get();
             //Json call
             MapActivity.setJsonObject();
@@ -90,16 +86,25 @@ public class Splash extends Activity{
 
 
 
-
-
-
-
-
     private class getUserData extends AsyncTask<Void, Void, Void> implements LocationListener{
 
         @Override
         protected Void doInBackground(Void... params) {
-            getUserLocation();
+            try {
+                getUserLocation();
+            }catch(Exception ex){
+                new AlertDialog.Builder(getApplicationContext())
+                        .setTitle("Locatie")
+                        .setMessage("Locatie niet gevonden!")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                System.exit(1);
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+            }
             return null;
         }
 
@@ -133,51 +138,12 @@ public class Splash extends Activity{
 
             Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
-
             // Get latitude of the current location
             MapActivity.myLatitude = myLocation.getLatitude();
 
             // Get longitude of the current location
             MapActivity.myLongitude = myLocation.getLongitude();
 
-//
-//            locationmanager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
-//
-//            Criteria criteria =new Criteria();
-//
-//            String provider=locationmanager.getBestProvider(criteria, true);
-//
-//            if(provider != null & !provider.equals(""))
-//
-//            {
-//
-//                Location location = locationmanager.getLastKnownLocation(provider);
-//
-//                locationmanager.requestLocationUpdates(provider,2000,1,this);
-//
-//                if(location != null)
-//
-//                {
-//
-//                    onLocationChanged(location);
-//
-//                }
-//
-//                else{
-//
-//                    Toast.makeText(getApplicationContext(),"location not found", Toast.LENGTH_LONG ).show();
-//
-//                }
-//
-//            }
-//
-//            else
-//
-//            {
-//
-//                Toast.makeText(getApplicationContext(),"Provider is null",Toast.LENGTH_LONG).show();
-//
-//            }
         }
 
 

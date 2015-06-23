@@ -37,8 +37,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    public static double myLatitude = 0;
-    public static double myLongitude = 0;
+    public static double myLatitude = 51.9172613;
+    public static double myLongitude = 4.4844436;
     private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
     CustomList nameImgAdapter;
 
@@ -78,7 +78,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             for (com.beerfinder.beerfinder.Location location : LocationsList) {
                 database.insertLocationIntoDatabase(location);
             }
-            database.closeDatabase();
+            Database.closeDatabase();
     }
 
     public static void getLocationList() {
@@ -339,7 +339,9 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
-                                    final int position, long id) {
+                                    final int position,final long id) {
+
+
                 final String item = (String) parent.getItemAtPosition(position);
                 view.animate().setDuration(500).alpha(0)
                         .withEndAction(new Runnable() {
