@@ -4,11 +4,14 @@ package com.beerfinder.beerfinder;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  * Created by Elize on 5-6-2015.
@@ -111,6 +114,73 @@ public class Database extends AsyncTask<Void, Void, Void>{
         }catch(SQLException ex){
             Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
         }
+
+    }
+
+    public ArrayList getBeerTypes() {
+        ArrayList<BeerType> list = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM typen_bier";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                int ID = result.getInt("BierSoort_ID");
+                String name = result.getString("Naam");
+                BeerType beerType = new BeerType(ID,name);
+                list.add(beerType);
+            }
+        }catch(SQLException ex){
+            Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());
+        }
+
+        return list;
+
+    }
+
+    public void insertIntoBeerLocations(String Place_ID, int Beer_ID){
+        try {
+            statement = connection.createStatement();
+            String sql = "INSERT INTO locaties_bier"
+                    + "(Locatie_ID, Bier_ID) "
+                    + "VALUES ('"
+                    + Place_ID
+                    + "', '"
+                    + Beer_ID
+                    + "');";
+            statement.execute(sql);
+        }catch(SQLException ex){
+            Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
+        }
+
+    }
+
+    public ArrayList<String> getAllBeerTypesForLocation(String Location_ID) {
+        ArrayList<Integer> listIDs = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM locaties_bier WHERE Locatie_ID = " + Location_ID + "";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                int ID = result.getInt("Bier_ID");
+                listIDs.add(ID);
+            }
+
+            statement = connection.createStatement();
+            for(int id: listIDs){
+                String sql2 = "SELECT Naam FROM bier WHERE Soort_Bier = " + id + "";
+                ResultSet result2 = statement.executeQuery(sql2);
+                while(result2.next()) {
+                    list.add(result2.getString("Naam"));
+                }
+            }
+
+
+        }catch(SQLException ex){
+            Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());
+        }
+
+        return list;
 
     }
 }

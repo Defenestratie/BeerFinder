@@ -17,12 +17,19 @@
          />
 
     <EditText
-        android:id="@+id/addBeerEditText"
+        android:id="@+id/addBeerNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize = "24sp"
-        android:hint="Enter the beer type you bought"
+        android:hint="Enter name of the beer you bought"
         />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerBeerTypes"
+        android:layout_gravity="center_horizontal"
+        android:spinnerMode="dropdown" />
 
     <Button
         android:id="@+id/addBeerButton"
