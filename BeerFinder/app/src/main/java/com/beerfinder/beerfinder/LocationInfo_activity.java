@@ -6,18 +6,21 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 
 
 public class LocationInfo_activity extends Activity {
-
+    String ID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_info_activity);
         Intent intent = getIntent();
+        ID = intent.getStringExtra("ID");
         String name = intent.getStringExtra("Name");
         String type = intent.getStringExtra("Type");
         String address =  intent.getStringExtra("Address");
@@ -49,5 +52,12 @@ public class LocationInfo_activity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void addABeer(View v){
+        Button button = (Button)v;
+        Intent intent = new Intent(getApplicationContext(), BoughtBeer.class);
+        intent.putExtra("locationID", ID);
+        startActivity(intent);
     }
 }

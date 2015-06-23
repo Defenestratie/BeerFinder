@@ -12,8 +12,7 @@
         android:id="@+id/listView"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        tools:listitem="@android:layout/simple_list_item_1" />
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,9 +41,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="address placeholder placeholder placeholder placeholder"
         android:id="@+id/address"
-        android:layout_below="@+id/type"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/type" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -64,7 +61,26 @@
         android:id="@+id/addBeerBtn"
         android:layout_above="@+id/listView"
         android:layout_alignRight="@+id/listView"
-        android:layout_alignEnd="@+id/listView" />
+        android:layout_alignEnd="@+id/listView"
+        android:onClick="addABeer"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Openingstijden"
+        android:id="@+id/openingTimes"
+        android:layout_above="@+id/listView2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:id="@+id/listView2"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -72,8 +88,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Nu geopend: nee"
         android:id="@+id/openTxt"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_above="@+id/listView2"
+        android:layout_alignLeft="@+id/addBeerBtn"
+        android:layout_alignStart="@+id/addBeerBtn" />
 
 </RelativeLayout>

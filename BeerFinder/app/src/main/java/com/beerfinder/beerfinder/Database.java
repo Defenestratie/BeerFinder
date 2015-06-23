@@ -4,18 +4,21 @@ package com.beerfinder.beerfinder;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  * Created by Elize on 5-6-2015.
  */
 public class Database extends AsyncTask<Void, Void, Void>{
-    private static Connection connection = null;
-    private static Statement statement = null;
+    private  static Connection connection = null;
+    private  static Statement statement = null;
 
     public Database(){
 
@@ -44,9 +47,10 @@ public class Database extends AsyncTask<Void, Void, Void>{
                     "Bierapp"
             );
 
-            Log.d("Database", "U heeft verbinding");
+            Log.d("Database","U heeft verbinding");
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Een SQLException..." + ex.getMessage());
+
         }catch(ClassNotFoundException ex){
             Log.i(getClass().toString(), "ClassNotFoundException..." + ex.getMessage());
         }catch(Exception ex){
@@ -66,7 +70,7 @@ public class Database extends AsyncTask<Void, Void, Void>{
     }//end of useDatabase()
 
 
-    public static void closeDatabase(){
+    public void closeDatabase(){
         try {
             if(!connection.isClosed()){
                 connection.close();
@@ -74,32 +78,22 @@ public class Database extends AsyncTask<Void, Void, Void>{
             }
         }catch(SQLException ex){
             Log.i("", "A SQLException... " + ex.getMessage());
-        }catch(NullPointerException ex){
-            Log.d("Tag", "Database is null");
-
         }
     }// end of closeDatabase()
 
     public void insertLocationIntoDatabase(Location location){
         try {
-
             statement = connection.createStatement();
             String sql = "INSERT INTO locaties"
-                    + "(Locatie_ID, Naam, Adres, Type ) "
+                    + "(Locatie_ID, Naam) "
                     + "VALUES ('"
                     + location.getID()
                     + "', '"
                     + location.getName()
-                    + "', '"
-                    + location.getAddress()
-                    + "', '"
-                    + location.getType()
                     + "');";
             statement.execute(sql);
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
-        }catch(NullPointerException ex){
-            Log.i("Tag", "Data niet toegevoegd: Nullpointer exception");
         }
 
     }
@@ -123,21 +117,70 @@ public class Database extends AsyncTask<Void, Void, Void>{
 
     }
 
-    public void insertLocationBeer(int BierID, Location location){
+    public ArrayList getBeerTypes() {
+        ArrayList<BeerType> list = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM typen_bier";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                int ID = result.getInt("BierSoort_ID");
+                String name = result.getString("Naam");
+                BeerType beerType = new BeerType(ID,name);
+                list.add(beerType);
+            }
+        }catch(SQLException ex){
+            Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());
+        }
+
+        return list;
+
+    }
+
+    public void insertIntoBeerLocations(String Place_ID, int Beer_ID){
         try {
             statement = connection.createStatement();
             String sql = "INSERT INTO locaties_bier"
                     + "(Locatie_ID, Bier_ID) "
                     + "VALUES ('"
-                    + location.getID()
+                    + Place_ID
                     + "', '"
-                    + BierID
+                    + Beer_ID
                     + "');";
             statement.execute(sql);
         }catch(SQLException ex){
             Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
         }
 
+    }
+
+    public ArrayList<String> getAllBeerTypesForLocation(String Location_ID) {
+        ArrayList<Integer> listIDs = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM locaties_bier WHERE Locatie_ID = " + Location_ID + "";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                int ID = result.getInt("Bier_ID");
+                listIDs.add(ID);
+            }
+
+            statement = connection.createStatement();
+            for(int id: listIDs){
+                String sql2 = "SELECT Naam FROM bier WHERE Soort_Bier = " + id + "";
+                ResultSet result2 = statement.executeQuery(sql2);
+                while(result2.next()) {
+                    list.add(result2.getString("Naam"));
+                }
+            }
+
+
+        }catch(SQLException ex){
+            Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());
+        }
+
+        return list;
 
     }
 }

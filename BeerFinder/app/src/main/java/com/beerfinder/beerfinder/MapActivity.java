@@ -105,7 +105,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         for (com.beerfinder.beerfinder.Location location : LocationsList) {
             database.insertLocationIntoDatabase(location);
         }
-        Database.closeDatabase();
     }
 
     public static void getLocationList() {
@@ -234,6 +233,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         intent.putExtra("Type", info.getType());
         intent.putExtra("Address", info.getAddress());
         intent.putExtra("Open", info.getOpen_now());
+        intent.putExtra("ID", info.getID());
         startActivity(intent);
     }
 
