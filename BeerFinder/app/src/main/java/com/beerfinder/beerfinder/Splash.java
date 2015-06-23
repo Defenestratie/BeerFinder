@@ -15,6 +15,9 @@ import android.util.Log;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -125,16 +128,22 @@ public class Splash extends Activity{
 
         private void getUserLocation() {
 
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
             // Create a criteria object to retrieve provider
             Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
 
             // Get the name of the best provider
             String provider = locationManager.getBestProvider(criteria, true);
 
             // Get Current Location
             android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
+
+            if(myLocation.equals(null)){
+               myLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            }
 
             Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
