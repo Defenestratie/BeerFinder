@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 
 public class LocationInfo_activity extends Activity {
     String ID;
@@ -41,6 +44,10 @@ public class LocationInfo_activity extends Activity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, database.getAllBeerTypesForLocation(ID));
         ListView listView = (ListView) findViewById(R.id.listViewBeerOnLocation);
         listView.setAdapter(adapter);
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override

@@ -63,9 +63,9 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapActivity.this);
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+//        AdView mAdView = (AdView) findViewById(R.id.adView);
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        mAdView.loadAd(adRequest);
     }
 
 
@@ -233,10 +233,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }
     }
 
-    public void openUserPreferences(View v){
-        ImageButton imageButton = (ImageButton)v;
-        startActivity(new Intent(MapActivity.this, UserPreferences.class));
-    }
+//    public void openUserPreferences(View v){
+//        ImageButton imageButton = (ImageButton)v;
+//        startActivity(new Intent(MapActivity.this, UserPreferences.class));
+//    }
 
     private void startInfoPage(int position) {
         Intent intent = new Intent(getApplicationContext(), LocationInfo_activity.class);
