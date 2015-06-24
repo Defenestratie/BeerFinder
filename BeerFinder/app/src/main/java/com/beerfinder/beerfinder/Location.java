@@ -20,17 +20,6 @@ public class Location {
     private String address =  null;
     private Bitmap icon = null;
 
-//    public Location(String type, String name, String ID, String adress, String phoneNumber, String website){
-//        this.type = type;
-//        this.name = name;
-//        this.ID = ID;
-//        this.adress = adress;
-//        this.phoneNumber = phoneNumber;
-//        this.website = website;
-//
-//
-//    }
-
     @Override
     public String toString() {
         return name;

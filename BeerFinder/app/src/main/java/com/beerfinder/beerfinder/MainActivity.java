@@ -40,20 +40,15 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-//        MapFragment mapFragment = (MapFragment) getFragmentManager()
-//                .findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        //mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
-        //mGoogleApiClient.disconnect();
         super.onStop();
     }
 
@@ -130,10 +125,4 @@ public class MainActivity extends Activity implements OnMapReadyCallback {
 
     }
 
-//    PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
-//    for (int z = 0; z < list.size(); z++) {
-//        LatLng point = list.get(z);
-//        options.add(point);
-//    }
-//    line = myMap.addPolyline(options);
 }

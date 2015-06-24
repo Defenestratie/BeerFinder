@@ -47,6 +47,7 @@ public class BoughtBeer extends Activity {
         ListView listView = (ListView) findViewById(R.id.beersAtLocationList);
         ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
+        beersAtLocationListView.invalidateViews();
     }
 
     public void addBeer(View v){
@@ -60,6 +61,7 @@ public class BoughtBeer extends Activity {
 
         database.insertBeerIntoDatabase(brand, name, id);
         database.insertIntoBeerLocations(place_ID, id);
+        setListView();
     }
 
     private void setSpinner(){

@@ -240,6 +240,8 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         intent.putExtra("Address", info.getAddress());
         intent.putExtra("Open", info.getOpen_now());
         intent.putExtra("ID", info.getID());
+        intent.putExtra("Open", info.getOpen_now());
+        Log.i("Tag", "info.getID()" + info.getID());
         startActivity(intent);
     }
 
@@ -311,9 +313,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }
     }
 
-
     public void setLocation() {
-
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -323,11 +323,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         // Get the name of the best provider
         String provider = locationManager.getBestProvider(criteria, true);
 
-
         // Get Current Location
         Log.d("get current location", "start");
         final Location[] myLocation = {locationManager.getLastKnownLocation(provider)};
-        myLocation[0] = locationManager.getLastKnownLocation(provider);
+        myLocation[0] = null;
         Log.d("get current location", "getLastKnowLocation try " + myLocation[0]);
         if (myLocation[0] == null) {
             Log.d("get current location", "inside if loop");
@@ -346,7 +345,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }
 
         Log.d("Location provider", "" + locationManager.getAllProviders().size());
-
 
         while(myLocation[0] == null)
         {
@@ -410,7 +408,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             public void onItemClick(AdapterView<?> parent, final View view,
                                     final int position, final long id) {
 
-
                 final String item = (String) parent.getItemAtPosition(position);
                 view.animate().setDuration(500).alpha(0)
                         .withEndAction(new Runnable() {
@@ -421,8 +418,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                                 view.setAlpha(1);
 
                                 startInfoPage(position);
-
-
                             }
                         });
             }
@@ -432,8 +427,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         listview.setAdapter(nameImgAdapter);
     }
-
-
 }
 
 

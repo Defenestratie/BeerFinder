@@ -4,16 +4,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
 public class LocationInfo_activity extends Activity {
     String ID;
+    Database database = new Database();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -21,15 +25,22 @@ public class LocationInfo_activity extends Activity {
         setContentView(R.layout.activity_location_info_activity);
         Intent intent = getIntent();
         ID = intent.getStringExtra("ID");
+        Log.i("Tag", "getID()" + ID);
         String name = intent.getStringExtra("Name");
         String type = intent.getStringExtra("Type");
         String address =  intent.getStringExtra("Address");
+        String open = "Nu geopend:" + intent.getStringExtra("Open");
         TextView titleName = (TextView) findViewById(R.id.name);
         titleName.setText(name);
         TextView typeName = (TextView) findViewById(R.id.type);
         typeName.setText(type);
         TextView addressTxt = (TextView) findViewById(R.id.address);
         addressTxt.setText(address);
+        TextView openText = (TextView) findViewById(R.id.openTxt);
+        openText.setText(open);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, database.getAllBeerTypesForLocation(ID));
+        ListView listView = (ListView) findViewById(R.id.listViewBeerOnLocation);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -55,7 +66,6 @@ public class LocationInfo_activity extends Activity {
     }
 
     public void addABeer(View v){
-        Button button = (Button)v;
         Intent intent = new Intent(getApplicationContext(), BoughtBeer.class);
         intent.putExtra("locationID", ID);
         startActivity(intent);

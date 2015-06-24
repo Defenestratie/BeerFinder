@@ -85,11 +85,15 @@ public class Database extends AsyncTask<Void, Void, Void>{
         try {
             statement = connection.createStatement();
             String sql = "INSERT INTO locaties"
-                    + "(Locatie_ID, Naam) "
+                    + "(Locatie_ID, Naam, Adres, Type) "
                     + "VALUES ('"
                     + location.getID()
                     + "', '"
                     + location.getName()
+                    + "', '"
+                    + location.getAddress()
+                    + "', '"
+                    + location.getType()
                     + "');";
             statement.execute(sql);
         }catch(SQLException ex){
@@ -159,7 +163,7 @@ public class Database extends AsyncTask<Void, Void, Void>{
         ArrayList<String> list = new ArrayList<>();
         try {
             statement = connection.createStatement();
-            String sql = "SELECT * FROM locaties_bier WHERE Locatie_ID = " + Location_ID + "";
+            String sql = "SELECT * FROM locaties_bier WHERE Locatie_ID = '" + Location_ID + "';";
             ResultSet result = statement.executeQuery(sql);
             while(result.next()){
                 int ID = result.getInt("Bier_ID");
@@ -168,13 +172,12 @@ public class Database extends AsyncTask<Void, Void, Void>{
 
             statement = connection.createStatement();
             for(int id: listIDs){
-                String sql2 = "SELECT Naam FROM bier WHERE Soort_Bier = " + id + "";
+                String sql2 = "SELECT Naam FROM bier WHERE Bier_ID = " + id + "";
                 ResultSet result2 = statement.executeQuery(sql2);
                 while(result2.next()) {
                     list.add(result2.getString("Naam"));
                 }
             }
-
 
         }catch(SQLException ex){
             Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());

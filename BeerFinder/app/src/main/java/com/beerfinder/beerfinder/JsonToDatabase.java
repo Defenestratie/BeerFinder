@@ -122,19 +122,6 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
                 //the adress of the location
                 String adres = jsonArray.getJSONObject(i).get("vicinity").toString();
 
-//                //icon of the location
-//                String iconUrl = jsonArray.getJSONObject(i).get("icon").toString();
-
-//                Bitmap mIcon11 = null;
-//                try {
-////                    mIcon11 = BitmapFactory.decodeStream((InputStream) new URL(iconUrl).getContent());
-//                    InputStream in = new java.net.URL(iconUrl).openStream();
-//                    mIcon11 = BitmapFactory.decodeStream(in);
-//                } catch (Exception e) {
-//                    Log.d("tag", "icon niet gepakt");
-//                }
-//                Bitmap icon = mIcon11;
-
                 Location location = new Location(placeID, name, latitudeLocation, longitudeLocation, type, open_now, adres);
                 Log.i("Tag", name);
                 arrayListLocations.add(location);

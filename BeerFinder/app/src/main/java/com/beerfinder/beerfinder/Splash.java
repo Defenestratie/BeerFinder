@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Window;
+import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
@@ -22,7 +23,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Florian on 21-6-2015.
  */
 public class Splash extends Activity {
-    private final int SPLASH_DURATION = 2000;
+    private final int SPLASH_DURATION = 500;
     LocationManager locationmanager;
 
     @Override
@@ -38,6 +39,18 @@ public class Splash extends Activity {
                 try {
                     Log.i("Tag", "Starting task...");
                     gatherData();
+                } catch (Exception ex) {
+                    new AlertDialog.Builder(getApplication())
+                            .setTitle("Error")
+                            .setMessage("Er is iets mis gegaan met het ophalen van uw locatie of de informatie uit de database." +
+                                    "Controleer uw internetverbinding.")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                   System.exit(0);
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
 
                 } finally {
                     Intent intent = new Intent(getApplicationContext(), MapActivity.class);
@@ -129,20 +142,12 @@ public class Splash extends Activity {
             String provider = locationManager.getBestProvider(criteria, true);
 
             // Get Current Location
-            android.location.Location myLocation = locationManager.getLastKnownLocation(provider);
+            android.location.Location myLocation = null;
+            //locationManager.getLastKnownLocation(provider);
 
-            if (myLocation.equals(null)) {
-                myLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-            }
 
             Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
-            // Get latitude of the current location
-            MapActivity.myLatitude = myLocation.getLatitude();
-
-            // Get longitude of the current location
-            MapActivity.myLongitude = myLocation.getLongitude();
 
         }
 
@@ -156,6 +161,9 @@ public class Splash extends Activity {
             MapActivity.myLongitude = location.getLongitude();
         }
     }
-}
+
+
+    }
+
 
 

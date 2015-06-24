@@ -36,7 +36,6 @@ public class CustomList extends ArrayAdapter<String>{
 
         imageView.setImageBitmap(imageBitmap[position]);
 
-//        imageView.setImageResource(imageBitmap[position]);
         return rowView;
     }
 }
