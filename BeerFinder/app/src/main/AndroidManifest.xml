@@ -54,6 +54,10 @@
             android:name=".LocationInfo_activity"
             android:label="@string/title_activity_location_info_activity" >
         </activity>
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent" />
     </application>
 
 </manifest>
