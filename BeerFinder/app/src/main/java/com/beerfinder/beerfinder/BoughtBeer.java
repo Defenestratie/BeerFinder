@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,8 @@ public class BoughtBeer extends Activity {
 
     private void setListView() {
         ArrayList<String> list = database.getAllBeerTypesForLocation(place_ID);
+        Toast toast = Toast.makeText(this, "Bieren in database: " + database.getAllBeerTypesForLocation(place_ID), Toast.LENGTH_LONG);
+        toast.show();
         ListView listView = (ListView) findViewById(R.id.beersAtLocationList);
         ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
@@ -59,8 +63,9 @@ public class BoughtBeer extends Activity {
         BeerType beertype = (BeerType)spinner.getSelectedItem();
         int id = beertype.getID();
 
-        database.insertBeerIntoDatabase(brand, name, id);
-        database.insertIntoBeerLocations(place_ID, id);
+        int ID_bier = database.insertBeerIntoDatabase(brand, name, id);
+        database.insertIntoBeerLocations(place_ID, ID_bier);
+        Log.d("Tag", "Id bier: " + ID_bier);
         setListView();
     }
 

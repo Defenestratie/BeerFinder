@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Florian on 21-6-2015.
  */
 public class Splash extends Activity {
-    private final int SPLASH_DURATION = 500;
+    private final int SPLASH_DURATION = 2000;
     LocationManager locationmanager;
 
     @Override
