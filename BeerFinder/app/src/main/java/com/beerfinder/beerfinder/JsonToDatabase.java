@@ -17,7 +17,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-
+import java.util.Set;
 
 
 /**
@@ -28,6 +28,28 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
         public static ArrayList<Location> arrayListLocations = new ArrayList<Location>();
         private static String[] typesArray = {"bar" , "cafe" , "liquor_store" , "grocery_or_supermarket"};
         private static JSONObject jsonObject = null;
+        public static String radius = "750";
+        private static String establishments = "bar|cafe|liquor_store|grocery_or_supermarket";
+
+    public static void setRadius(String radius) {
+        JsonToDatabase.radius = radius;
+    }
+
+    public static void setEstablishments(Set<String> establishments) {
+        String establishmentsString = "";
+        String[] establishmentsArray = establishments.toArray(new String[establishments.size()]);
+
+        for(int i = 0; i < establishmentsArray.length; i++){
+            if(i < establishmentsArray.length - 1){
+                establishmentsString += establishments + "|";
+            }else{
+                establishmentsString += establishments;
+            }
+        }
+        JsonToDatabase.establishments = establishmentsString;
+    }
+
+
 
         private static String readAll(Reader rd) throws IOException {
             StringBuilder sb = new StringBuilder();
@@ -63,7 +85,9 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
     public static JSONObject readJsons(String lat, String lon) throws JSONException, IOException {
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
                 + lat + "," + lon +
-                "&radius=750&types=bar|cafe|liquor_store|grocery_or_supermarket&key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c";
+                "&radius="+ radius + "&" +
+                "types="+ establishments +"&" +
+                "key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c";
 
         JSONObject json = readJsonFromUrl(url);
                  Log.i("Tag", url);

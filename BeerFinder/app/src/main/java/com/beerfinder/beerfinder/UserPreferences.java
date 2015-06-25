@@ -29,7 +29,10 @@ public class UserPreferences extends PreferenceActivity {
         Set<String> beerBrands = settings.getStringSet("beerBrands", null);
         Set<String> beerTypes = settings.getStringSet("beerTypes", null);
         Set<String> establishments = settings.getStringSet("establishments", null);
-        //TODO in JSON zetten
+
+        JsonToDatabase.setRadius(radius);
+        JsonToDatabase.setEstablishments(establishments);
+        //TODO database ophalen?
 
         Log.d("Tag", "Radius: " + radius);
         Log.d("Tag", "Brands: " + beerBrands);
