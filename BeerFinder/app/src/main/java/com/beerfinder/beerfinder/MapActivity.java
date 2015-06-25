@@ -115,10 +115,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     }
 
     public static void getLocationList() {
-        StrictMode.ThreadPolicy policy = new
-                StrictMode.ThreadPolicy.Builder()
-                .permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new
+//                StrictMode.ThreadPolicy.Builder()
+//                .permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
         LocationsList = JsonToDatabase.readJsonInfo();
     }
 

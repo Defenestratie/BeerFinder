@@ -40,7 +40,7 @@ public class Splash extends Activity {
                     Log.i("Tag", "Starting task...");
                     gatherData();
                 } catch (Exception ex) {
-                    new AlertDialog.Builder(getApplication())
+                    new AlertDialog.Builder(Splash.this)
                             .setTitle("Error")
                             .setMessage("Er is iets mis gegaan met het ophalen van uw locatie of de informatie uit de database." +
                                     "Controleer uw internetverbinding.")
