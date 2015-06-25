@@ -1,16 +1,10 @@
 package com.beerfinder.beerfinder;
 
-import android.annotation.TargetApi;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.Set;
 
@@ -18,6 +12,10 @@ import java.util.Set;
  * Created by Florian on 8-6-2015.
  */
 public class UserPreferences extends PreferenceActivity {
+
+    private static Set<String> beerBrands;
+    private static Set<String> beerTypes;
+
     SharedPreferences settings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +24,8 @@ public class UserPreferences extends PreferenceActivity {
 
         settings = PreferenceManager.getDefaultSharedPreferences(UserPreferences.this);
         String radius = settings.getString("beerRadius", null);
-        Set<String> beerBrands = settings.getStringSet("beerBrands", null);
-        Set<String> beerTypes = settings.getStringSet("beerTypes", null);
+        beerBrands = settings.getStringSet("beerBrands", null);
+        beerTypes = settings.getStringSet("beerTypes", null);
         Set<String> establishments = settings.getStringSet("establishments", null);
 
         JsonToDatabase.setRadius(radius);
@@ -39,5 +37,13 @@ public class UserPreferences extends PreferenceActivity {
         Log.d("Tag", "Types: " + beerTypes);
         Log.d("Tag", "Establishments: " + establishments);
 
+    }
+
+    public static Set<String> getBeerBrands() {
+        return beerBrands;
+    }
+
+    public static Set<String> getBeerTypes() {
+        return beerTypes;
     }
 }

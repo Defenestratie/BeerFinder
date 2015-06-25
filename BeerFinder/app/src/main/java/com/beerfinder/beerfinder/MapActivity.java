@@ -10,15 +10,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,9 +27,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +37,13 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static double myLatitude;
     public static double myLongitude;
+
+    //direct locations from JSON
     private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
+
+    //JSON locations filtered for beer types
+    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList2 = new ArrayList();
+
     CustomList nameImgAdapter;
 
     ArrayList<String> nameList = new ArrayList<String>();
@@ -139,6 +139,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             setLocation();
             setJsonObject();
             getLocationList();
+//            LocationsList2 = Database.filterByBeer(LocationsList);
         }
         setMarkers();
         Log.i("Tag", "Markers geplaatst");
