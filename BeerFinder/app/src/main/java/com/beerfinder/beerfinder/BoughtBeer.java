@@ -46,8 +46,6 @@ public class BoughtBeer extends Activity {
 
     private void setListView() {
         ArrayList<String> list = database.getAllBeerTypesForLocation(place_ID);
-        Toast toast = Toast.makeText(this, "Bieren in database: " + database.getAllBeerTypesForLocation(place_ID), Toast.LENGTH_LONG);
-        toast.show();
         ListView listView = (ListView) findViewById(R.id.beersAtLocationList);
         ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);

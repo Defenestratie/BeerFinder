@@ -49,7 +49,9 @@
         <!-- <meta-data -->
         <!-- android:name="com.google.android.geo.API_KEY" -->
         <!-- android:value="AIzaSyCs_qvD8nhqAQzLdbWnMj9nuXozeq-MD2c" /> -->
-        <activity android:name=".UserPreferences"/>
+        <activity
+            android:name=".UserPreferences"
+            android:label="User Preferences"/>
         <activity
             android:name=".LocationInfo_activity"
             android:label="@string/title_activity_location_info_activity" >

@@ -183,22 +183,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            startActivity(new Intent(getApplicationContext(), UserPreferences.class));
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -233,10 +217,9 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }
     }
 
-//    public void openUserPreferences(View v){
-//        ImageButton imageButton = (ImageButton)v;
-//        startActivity(new Intent(MapActivity.this, UserPreferences.class));
-//    }
+    public void openUserPreferences(View v){
+        startActivity(new Intent(getApplicationContext(), UserPreferences.class));
+    }
 
     private void startInfoPage(int position) {
         Intent intent = new Intent(getApplicationContext(), LocationInfo_activity.class);
