@@ -123,6 +123,22 @@ public class Database extends AsyncTask<Void, Void, Void> {
                 ID = res.getInt(1);
         } catch (SQLException ex) {
             Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
+            try {
+                statement = connection.createStatement();
+                String sql = "SELECT Bier_ID FROM bier WHERE Merk = '"
+                        + merk
+                        + "' AND Naam = '"
+                        + naam
+                        + "' AND Soort_Bier = '"
+                        + soort_ID
+                        + "';" ;
+                ResultSet resultSet = statement.executeQuery(sql);
+                while (resultSet.next()) {
+                    ID = resultSet.getInt("Bier_ID");
+                }
+            }catch(SQLException ex2){
+                Log.d(getClass().toString(), "Niet opgehaald." + ex.getMessage());
+            }
         }
         return ID;
     }
