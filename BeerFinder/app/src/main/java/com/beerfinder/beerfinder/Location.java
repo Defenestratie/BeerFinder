@@ -2,6 +2,7 @@ package com.beerfinder.beerfinder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -16,19 +17,8 @@ public class Location {
     private double lat;
     private double lon;
     private String open_now = "Onbekend";
-    private String adres =  null;
+    private String address =  null;
     private Bitmap icon = null;
-
-//    public Location(String type, String name, String ID, String adress, String phoneNumber, String website){
-//        this.type = type;
-//        this.name = name;
-//        this.ID = ID;
-//        this.adress = adress;
-//        this.phoneNumber = phoneNumber;
-//        this.website = website;
-//
-//
-//    }
 
     @Override
     public String toString() {
@@ -42,25 +32,30 @@ public class Location {
         this.lon = lon;
     }
 
-    public Location(String ID,String name, double lat, double lon, String type, String open_now, String adres ) {
+    public Location(String ID,String name, double lat, double lon, String type, String open_now, String adres) {
         this.type = type;
         this.name = name;
         this.ID = ID;
         this.lat = lat;
         this.lon = lon;
         this.open_now = open_now;
-        this.adres = adres;
+        this.address = adres;
     }
 
-    public Location(String ID,String name, double lat, double lon, String type, String open_now, String adres, Bitmap icon) {
+    public Location(String ID,String name, double lat, double lon, String type, String open_now, String address, Bitmap icon) {
         this.type = type;
         this.name = name;
         this.ID = ID;
         this.lat = lat;
         this.lon = lon;
         this.open_now = open_now;
-        this.adres = adres;
+        this.address = address;
         this.icon = icon;
+    }
+
+    public String getOpen_now()
+    {
+        return open_now;
     }
 
     public String getID() {
@@ -87,10 +82,22 @@ public class Location {
         this.lat = lat;
     }
 
+    public String getAddress()
+    {
+        return address;
+    }
+
     public BitmapDescriptor getTypeIcon(Context context) {
-        String imageName = this.getType();
         int imageID = context.getResources().getIdentifier(this.getType() , "drawable", context.getPackageName());
         return BitmapDescriptorFactory.fromResource(imageID);
+    }
+
+    public Bitmap getListTypeIcon(Context context){
+        int imageID = context.getResources().getIdentifier(this.getType() + "list" , "drawable", context.getPackageName());
+        Bitmap iconForList = BitmapFactory.decodeResource(context.getResources(),
+                imageID);
+
+        return iconForList;
     }
 
     public Bitmap getIcon() {

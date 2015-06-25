@@ -38,13 +38,10 @@
 
     <!--typen bier-->
     <string-array name="beerTypesArray">
-        <item>Alcoholvrij</item>
-        <item>Rose</item>
-        <item>Witbier</item>
-        <item>Amber bier</item>
-        <item>Blond bier</item>
-        <item>Herfstbok</item>
-        <item>Pils</item>
+        <item>Wit bier</item>
+        <item>Alcoholvrij bier</item>
+        <item>Pint</item>
+        <item>Normaal </item>
     </string-array>
 
     <string-array name="beerTypesValues">
@@ -52,13 +49,10 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
     </string-array>
 
-    <!--faciliteiten-->
-    <string-array name="facilitiesArray">
+    <!---->
+    <string-array name="establishmentsArray">
         <item>Supermarket</item>
         <item>Cafe</item>
         <item>Pub</item>
@@ -66,7 +60,7 @@
         <item>Retailer</item>
     </string-array>
 
-    <string-array name="facilitiesValues">
+    <string-array name="establishmentsValues">
         <item>1</item>
         <item>2</item>
         <item>3</item>

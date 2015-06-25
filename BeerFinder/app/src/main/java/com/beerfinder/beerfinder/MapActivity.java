@@ -1,27 +1,37 @@
 package com.beerfinder.beerfinder;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,134 +39,82 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class MapActivity extends FragmentActivity {
-
+public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    public static double myLatitude = 0;
-    public static double myLongitude = 0;
-    ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
+    public static double myLatitude;
+    public static double myLongitude;
+    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
     CustomList nameImgAdapter;
 
-    ListView list;
     ArrayList<String> nameList = new ArrayList<String>();
     ArrayList<Bitmap> imageList = new ArrayList<Bitmap>();
     String[] staticNameList;
     Bitmap[] staticImageList;
 
-//    String[] nameList;
-//    Integer[] imageList;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
-        setUpMapIfNeeded();
+
+        //setUpMapIfNeeded();
         Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
-        //Json call
-        SetJsonObject();
-        //Json uitpakken
 
-        getLocationList();
-        Log.i("Tag", "List opgehaald.");
-        if (LocationsList.isEmpty() ){
-            Log.i("Tag", "Arraylist leeg.");
-
-        } else {
-            setMarkers();
-            Log.i("Tag", "Markers geplaatst");
-
-            new Thread(new Runnable() {
-                public void run() {
-                    setListview();
-                    Log.i("Tag", "Listview gemaakt.");
-                }
-            }).start();
-
-            InsertToDatabase();
-        }
-
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view,
-//                                    int position, long id) {
-//                Toast.makeText(MainActivity.this, "You Clicked at " + web[+position], Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-
-//        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-//                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-//                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-//                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-//                "Android", "iPhone", "WindowsMobile" };
-//
-//        final ArrayList<String> list = new ArrayList<String>();
-//        for (int i = 0; i < values.length; ++i) {
-//            list.add(values[i]);
-//        }
-
-        //Voor de exception over de NetworkOnMainThreadException
-
-//        final StableArrayAdapter adapter = new StableArrayAdapter(this,
-//                android.R.layout.simple_list_item_1, LocationsList);
-
-
-//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, final View view,
-//                                    int position, long id) {
-//                final String item = (String) parent.getItemAtPosition(position);
-//                view.animate().setDuration(2000).alpha(0)
-//                        .withEndAction(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                LocationsList.remove(item);
-//                                adapter.notifyDataSetChanged();
-//                                view.setAlpha(1);
-//                            }
-//                        });
-//            }
-//
-//        });
-
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(MapActivity.this);
+//        AdView mAdView = (AdView) findViewById(R.id.adView);
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        mAdView.loadAd(adRequest);
     }
 
-    private void SetJsonObject() {
+
+
+    public LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(android.location.Location location) {
+            myLatitude = location.getLatitude();
+            myLongitude = location.getLongitude();
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
+    };
+
+    public static void setJsonObject() {
         try {
             new JsonToDatabase().execute(Double.toString(myLatitude), Double.toString(myLongitude)).get();
-        }catch(ExecutionException ex){
+        } catch (ExecutionException ex) {
             Log.i("Tag", "JsonObject ophalen onderbroken!");
 
-        }catch(InterruptedException ex){
+        } catch (InterruptedException ex) {
             Log.i("Tag", "JsonObject ophalen onderbroken!");
         }
+
     }
 
     private void InsertToDatabase() {
         Database database = new Database();
-        try{
-            new Database().execute().get();
-            for(com.beerfinder.beerfinder.Location location: LocationsList) {
-
-                database.insertLocationIntoDatabase(location);
-
-            }
-            database.closeDatabase();
-
-        }catch(ExecutionException ex){
-            Log.i("Tag", "Database ophalen onderbroken!");
-
-        }catch(InterruptedException ex){
-            Log.i("Tag", "Database ophalen onderbroken!");
+        for (com.beerfinder.beerfinder.Location location : LocationsList) {
+            database.insertLocationIntoDatabase(location);
         }
-
     }
 
-    private void getLocationList() {
+    public static void getLocationList() {
         StrictMode.ThreadPolicy policy = new
                 StrictMode.ThreadPolicy.Builder()
                 .permitAll().build();
@@ -165,11 +123,39 @@ public class MapActivity extends FragmentActivity {
     }
 
     private void setMarkers() {
-        for(com.beerfinder.beerfinder.Location location: LocationsList ){
+
+        for (com.beerfinder.beerfinder.Location location : LocationsList) {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLat(), location.getLon()))
-                    .title(location.getName()).icon(BitmapDescriptorFactory.fromBitmap(location.getIcon())));
+                    .title(location.getName()).icon(location.getTypeIcon(this)));
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        if (LocationsList.isEmpty()) {
+            Log.i("Tag", "Arraylist leeg.");
+            setLocation();
+            setJsonObject();
+            getLocationList();
+        }
+        setMarkers();
+        Log.i("Tag", "Markers geplaatst");
+
+        new Thread(new Runnable() {
+            public void run() {
+                setListview();
+                Log.i("Tag", "Listview gemaakt.");
+            }
+        }).start();
+
+        InsertToDatabase();
+    }
+
+    public void onLocationChanged(Location location) {
+        // Called when a new location is found by the network location provider.
+
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -195,22 +181,6 @@ public class MapActivity extends FragmentActivity {
             return true;
         }
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(getApplicationContext(), UserPreferences.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -247,14 +217,66 @@ public class MapActivity extends FragmentActivity {
         }
     }
 
+    public void openUserPreferences(View v){
+        startActivity(new Intent(getApplicationContext(), UserPreferences.class));
+    }
+
+    private void startInfoPage(int position) {
+        Intent intent = new Intent(getApplicationContext(), LocationInfo_activity.class);
+        com.beerfinder.beerfinder.Location info = LocationsList.get(position);
+        intent.putExtra("Name", info.getName());
+        intent.putExtra("Type", info.getType());
+        intent.putExtra("Address", info.getAddress());
+        intent.putExtra("Open", info.getOpen_now());
+        intent.putExtra("ID", info.getID());
+        intent.putExtra("Open", info.getOpen_now());
+        Log.i("Tag", "info.getID()" + info.getID());
+        startActivity(intent);
+    }
+
+    Marker lastMarker = null;
+
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+
+        marker.showInfoWindow();
+        Log.d("onMarkerClick", "Started!");
+
+        try {
+            Log.d("onMarkerClick", "marker.getId = " + marker.getId() + " lastMarker.getId = " + lastMarker.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String id = marker.getId();
+
+        id = id.replaceFirst("m", "");
+        int position = Integer.parseInt(id);
+        Log.d("loc forloop", " id = " + id);
+
+        if (lastMarker != null && marker.getId().equals(lastMarker.getId())) {
+            startInfoPage(position);
+        }
+
+        lastMarker = marker;
+
+
+        //handle click here
+        return false;
+    }
+
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
+        mMap.setOnMarkerClickListener(this);
 
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
 
         // Get LocationManager object from System Service LOCATION_SERVICE
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
         // Create a criteria object to retrieve provider
         Criteria criteria = new Criteria();
@@ -265,7 +287,7 @@ public class MapActivity extends FragmentActivity {
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        if (myLocation == null) {
+        if (myLocation == null || (myLatitude != 0 && myLongitude != 0)) {
             Log.d("Location provider", "No  location detected!");
             try {
                 Thread.sleep(500);
@@ -281,6 +303,7 @@ public class MapActivity extends FragmentActivity {
     }
 
     public void setLocation() {
+
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // Create a criteria object to retrieve provider
@@ -290,18 +313,46 @@ public class MapActivity extends FragmentActivity {
         String provider = locationManager.getBestProvider(criteria, true);
 
         // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
+        Log.d("get current location", "start");
+        final Location[] myLocation = {locationManager.getLastKnownLocation(provider)};
+        myLocation[0] = null;
+        Log.d("get current location", "getLastKnowLocation try " + myLocation[0]);
+        if (myLocation[0] == null) {
+            Log.d("get current location", "inside if loop");
+            MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
+                @Override
+                public void gotLocation(Location location) {
+                    Log.d("got location", "Got location" + location);
+                    myLocation[0] = location;
+                }
+            };
+
+            Log.d("get current location", "after if loop " + myLocation[0]);
+
+            MyLocation myLocation2 = new MyLocation();
+            myLocation2.getLocation(this, locationResult);
+        }
 
         Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
+        while(myLocation[0] == null)
+        {
+            try {
+                Thread.sleep(100);
+                Log.d("sleep", "sleeping 100 miliseconds");
+                Toast.makeText(getApplicationContext(),"Waiting for location!",Toast.LENGTH_SHORT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        myLatitude = myLocation.getLatitude();
+        myLatitude = myLocation[0].getLatitude();
 
         // Get longitude of the current location
-        myLongitude = myLocation.getLongitude();
+        myLongitude = myLocation[0].getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(myLatitude, myLongitude);
@@ -311,26 +362,24 @@ public class MapActivity extends FragmentActivity {
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-//        mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
+        //mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
     }
 
-    public static int[] convertIntegers(List<Integer> integers)
-    {
+    public static int[] convertIntegers(List<Integer> integers) {
         int[] ret = new int[integers.size()];
         Iterator<Integer> iterator = integers.iterator();
-        for (int i = 0; i < ret.length; i++)
-        {
+        for (int i = 0; i < ret.length; i++) {
             ret[i] = iterator.next().intValue();
         }
         return ret;
     }
 
-    private void setListview(){
+    private void setListview() {
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
 
-        for(com.beerfinder.beerfinder.Location location: LocationsList ){
+        for (com.beerfinder.beerfinder.Location location : LocationsList) {
             nameList.add(location.getName());
-            imageList.add(location.getIcon());
+            imageList.add(location.getListTypeIcon(this));
         }
 
         staticNameList = new String[nameList.size()];
@@ -343,24 +392,28 @@ public class MapActivity extends FragmentActivity {
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
+                                    final int position, final long id) {
+
                 final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
+                view.animate().setDuration(500).alpha(0)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                LocationsList.remove(item);
+                                //LocationsList.remove(item);
                                 nameImgAdapter.notifyDataSetChanged();
                                 view.setAlpha(1);
+
+                                startInfoPage(position);
                             }
                         });
             }
 
         });
 
-//        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_single, LocationsList);
+
         listview.setAdapter(nameImgAdapter);
     }
 }
