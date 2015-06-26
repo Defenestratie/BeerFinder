@@ -39,10 +39,13 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     public static double myLongitude;
 
     //direct locations from JSON
-    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
+    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList1 = new ArrayList();
 
     //JSON locations filtered for beer types
     private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList2 = new ArrayList();
+
+    //List that is drawn on the map
+    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
 
     CustomList nameImgAdapter;
 
@@ -109,17 +112,17 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     private void InsertToDatabase() {
         Database database = new Database();
-        for (com.beerfinder.beerfinder.Location location : LocationsList) {
+        for (com.beerfinder.beerfinder.Location location : LocationsList1) {
             database.insertLocationIntoDatabase(location);
         }
     }
 
-    public static void getLocationList() {
+    public static void getLocationList1() {
 //        StrictMode.ThreadPolicy policy = new
 //                StrictMode.ThreadPolicy.Builder()
 //                .permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
-        LocationsList = JsonToDatabase.readJsonInfo();
+        LocationsList1 = JsonToDatabase.readJsonInfo();
     }
 
     private void setMarkers() {
@@ -138,8 +141,14 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             Log.i("Tag", "Arraylist leeg.");
             setLocation();
             setJsonObject();
-            getLocationList();
-//            LocationsList2 = Database.filterByBeer(LocationsList);
+            getLocationList1();
+            if (UserPreferences.getBeerTypes() != null && UserPreferences.getBeerBrands() != null) {
+                LocationsList2 = Database.filterByBeer(LocationsList1);
+                LocationsList = LocationsList2;
+            }
+            else {
+                LocationsList = LocationsList1;
+            }
         }
         setMarkers();
         Log.i("Tag", "Markers geplaatst");
@@ -403,7 +412,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                //LocationsList.remove(item);
+                                //LocationsList1.remove(item);
                                 nameImgAdapter.notifyDataSetChanged();
                                 view.setAlpha(1);
 

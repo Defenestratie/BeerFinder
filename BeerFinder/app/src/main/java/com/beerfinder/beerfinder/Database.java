@@ -210,7 +210,7 @@ public class Database extends AsyncTask<Void, Void, Void> {
     }
 
     //returns list filtered by type and brand
-    public ArrayList<Location> filterByBeer(ArrayList<Location> location) {
+    public static ArrayList<Location> filterByBeer(ArrayList<Location> location) {
         ArrayList<String> IDList = new ArrayList<>();
         ArrayList<Location> filteredList = new ArrayList<>();
         try {
@@ -224,7 +224,7 @@ public class Database extends AsyncTask<Void, Void, Void> {
                 IDList.add(Integer.toString(ID));
             }
         } catch (SQLException ex) {
-            Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());
+            Log.i("Database", "Niet Opgehaald." + ex.getMessage());
         }
 
         for (String id: IDList) {
@@ -238,7 +238,7 @@ public class Database extends AsyncTask<Void, Void, Void> {
     }
 
     //returns a list of all beers complying with user preferences
-    public ArrayList<String> suitableBeers(Set<String> bTypes, Set<String> bBrands) {
+    public static ArrayList<String> suitableBeers(Set<String> bTypes, Set<String> bBrands) {
         ArrayList<String> list = new ArrayList<>();
         try {
             statement = connection.createStatement();
@@ -251,13 +251,13 @@ public class Database extends AsyncTask<Void, Void, Void> {
                 list.add(Integer.toString(ID));
             }
         } catch (SQLException ex) {
-            Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());
+            Log.i("database", "Niet Opgehaald." + ex.getMessage());
         }
         return list;
     }
 
     //converts a set<String> to sql syntax with OR
-    public String setToSqlORStatements(Set<String> set) {
+    public static String setToSqlORStatements(Set<String> set) {
         String[] s = set.toArray(new String[set.size()]);
         String sql = s[0];
         for(int i = 1; i < sql.length(); i++) {
@@ -268,7 +268,7 @@ public class Database extends AsyncTask<Void, Void, Void> {
     }
 
     //converts a set<String> to sql syntax with OR
-    public String arrayToSqlORStatements(ArrayList<String> strings) {
+    public static String arrayToSqlORStatements(ArrayList<String> strings) {
         String sql = strings.get(0);
         for(int i = 1; i < sql.length(); i++) {
             sql = sql + " OR ";
