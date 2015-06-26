@@ -6,7 +6,7 @@
         android:key="beerRadius"
         android:entries="@array/radiusArray"
         android:entryValues="@array/radiusValues"
-        android:defaultValue="2"/>
+        android:defaultValue="1000"/>
 
     <MultiSelectListPreference        android:title="Beer brands"
         android:summary="Select your preferred beer brands"
@@ -26,7 +26,7 @@
 
     <MultiSelectListPreference        android:title="Establishments"
         android:summary="Select your preferred establishments"
-        android:key="facilities"
+        android:key="establishments"
         android:entries="@array/establishmentsArray"
         android:entryValues="@array/establishmentsValues"
         android:defaultValue="@array/empty_array"

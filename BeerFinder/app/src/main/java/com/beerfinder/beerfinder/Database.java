@@ -3,7 +3,6 @@ package com.beerfinder.beerfinder;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Created by Elize on 5-6-2015.
@@ -123,6 +123,22 @@ public class Database extends AsyncTask<Void, Void, Void> {
                 ID = res.getInt(1);
         } catch (SQLException ex) {
             Log.d(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
+            try {
+                statement = connection.createStatement();
+                String sql = "SELECT Bier_ID FROM bier WHERE Merk = '"
+                        + merk
+                        + "' AND Naam = '"
+                        + naam
+                        + "' AND Soort_Bier = '"
+                        + soort_ID
+                        + "';" ;
+                ResultSet resultSet = statement.executeQuery(sql);
+                while (resultSet.next()) {
+                    ID = resultSet.getInt("Bier_ID");
+                }
+            }catch(SQLException ex2){
+                Log.d(getClass().toString(), "Niet opgehaald." + ex.getMessage());
+            }
         }
         return ID;
     }
@@ -191,5 +207,103 @@ public class Database extends AsyncTask<Void, Void, Void> {
 
         return list;
 
+    }
+
+    //returns list filtered by type and brand
+    public static ArrayList<Location> filterByBeer(ArrayList<Location> location) {
+        ArrayList<String> IDList = new ArrayList<>();
+        ArrayList<Location> filteredList = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+//            String id = getBeerTypeID(s);
+            String sql = "SELECT * FROM locaties_bier WHERE Bier_ID = " +
+                    arrayToSqlORStatements(suitableBeers(UserPreferences.getBeerTypes(), UserPreferences.getBeerBrands()));
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                int ID = result.getInt("Locatie_ID");
+                IDList.add(Integer.toString(ID));
+            }
+        } catch (SQLException ex) {
+            Log.i("Database", "Niet Opgehaald." + ex.getMessage());
+        }
+
+        for (String id: IDList) {
+            for (Location l: location) {
+                if (l.getID().equals(id)) {
+                    filteredList.add(l);
+                }
+            }
+        }
+        return filteredList;
+    }
+
+    //returns a list of all beers complying with user preferences
+    public static ArrayList<String> suitableBeers(Set<String> bTypes, Set<String> bBrands) {
+        ArrayList<String> list = new ArrayList<>();
+        String sql;
+        try {
+            statement = connection.createStatement();
+            if (bTypes != null && bBrands == null) {
+
+                sql = "SELECT * FROM locaties_bier WHERE " +
+                        "(Soort_Bier = " + setToSqlORStatements(bTypes) + ")";
+            }
+            else if (bTypes == null && bBrands != null) {
+                sql = "SELECT * FROM locaties_bier WHERE " +
+                        "(Naam = " + setToSqlORStatements(bBrands) + ")";
+            }
+            else {
+                sql = "SELECT * FROM locaties_bier WHERE " +
+                        "(Soort_Bier = " + setToSqlORStatements(bTypes) + ")" +
+                        "(Naam = " + setToSqlORStatements(bBrands) + ")";
+            }
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                int ID = result.getInt("Bier_ID");
+                list.add(Integer.toString(ID));
+            }
+        } catch (SQLException ex) {
+            Log.i("database", "Niet Opgehaald." + ex.getMessage());
+        }
+        return list;
+    }
+
+    //converts a set<String> to sql syntax with OR
+    public static String setToSqlORStatements(Set<String> set) {
+        String[] s = set.toArray(new String[set.size()]);
+        String sql = s[0];
+        for(int i = 1; i < sql.length(); i++) {
+            sql = sql + " OR ";
+            sql = sql + s[i];
+        }
+        return sql;
+    }
+
+    //converts a set<String> to sql syntax with OR
+    public static String arrayToSqlORStatements(ArrayList<String> strings) {
+        String sql = strings.get(0);
+        for(int i = 1; i < sql.length(); i++) {
+            sql = sql + " OR ";
+            sql = sql + strings.get(i);
+        }
+        return sql;
+    }
+
+    //returns id for beerType name
+    public String getBeerTypeID(String name) {
+        String beerTypeID = null;
+        try {
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM typen_bier WHERE Naam = " + "\'" + name + "\'";
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                int ID = result.getInt("BierSoort_ID");
+//                    String name = result.getString("Naam");
+                beerTypeID = Integer.toString(ID);
+            }
+        } catch (SQLException ex) {
+            Log.i(getClass().toString(), "Niet Opgehaald." + ex.getMessage());
+        }
+        return beerTypeID;
     }
 }

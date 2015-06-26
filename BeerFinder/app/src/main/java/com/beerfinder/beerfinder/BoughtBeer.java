@@ -1,6 +1,8 @@
 package com.beerfinder.beerfinder;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -52,19 +54,50 @@ public class BoughtBeer extends Activity {
         beersAtLocationListView.invalidateViews();
     }
 
-    public void addBeer(View v){
+    private boolean checkEditTextBox(){
         EditText beerBrand =  (EditText) findViewById(R.id.beerBrandEditText);
         EditText beerName = (EditText) findViewById(R.id.addBeerNameEditText);
-        String brand = beerBrand.getText().toString();
-        String name = beerName.getText().toString();
-        Spinner spinner = (Spinner) findViewById(R.id.spinnerBeerTypes);
-        BeerType beertype = (BeerType)spinner.getSelectedItem();
-        int id = beertype.getID();
+        if(beerBrand.getText().toString().trim().length() == 0
+                || beerName.getText().toString().trim().length() == 0){
+            return false;
+        }else if(beerBrand.getText().toString().trim().length() == 0
+                && beerName.getText().toString().trim().length() == 0){
+            return false;
+        }else{
+            return true;
+        }
 
-        int ID_bier = database.insertBeerIntoDatabase(brand, name, id);
-        database.insertIntoBeerLocations(place_ID, ID_bier);
-        Log.d("Tag", "Id bier: " + ID_bier);
-        setListView();
+    }
+
+    public void addBeer(View v){
+        if(checkEditTextBox()) {
+            EditText beerBrand = (EditText) findViewById(R.id.beerBrandEditText);
+            EditText beerName = (EditText) findViewById(R.id.addBeerNameEditText);
+            String brand = beerBrand.getText().toString();
+            String name = beerName.getText().toString();
+            Spinner spinner = (Spinner) findViewById(R.id.spinnerBeerTypes);
+            BeerType beertype = (BeerType) spinner.getSelectedItem();
+            int id = beertype.getID();
+            int ID_bier = database.insertBeerIntoDatabase(brand, name, id);
+            database.insertIntoBeerLocations(place_ID, ID_bier);
+            Log.d("Tag", "Id bier: " + ID_bier);
+            setListView();
+        }else{
+            displayError();
+        }
+    }
+
+    private void displayError() {
+        new AlertDialog.Builder(BoughtBeer.this)
+                .setTitle("Error")
+                .setMessage("Niet alle velden zijn ingevoerd.")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     private void setSpinner(){

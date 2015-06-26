@@ -10,15 +10,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,9 +27,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +37,16 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public static double myLatitude;
     public static double myLongitude;
+
+    //direct locations from JSON
+    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList1 = new ArrayList();
+
+    //JSON locations filtered for beer types
+    private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList2 = new ArrayList();
+
+    //List that is drawn on the map
     private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
+
     CustomList nameImgAdapter;
 
     ArrayList<String> nameList = new ArrayList<String>();
@@ -109,17 +112,17 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     private void InsertToDatabase() {
         Database database = new Database();
-        for (com.beerfinder.beerfinder.Location location : LocationsList) {
+        for (com.beerfinder.beerfinder.Location location : LocationsList1) {
             database.insertLocationIntoDatabase(location);
         }
     }
 
-    public static void getLocationList() {
-        StrictMode.ThreadPolicy policy = new
-                StrictMode.ThreadPolicy.Builder()
-                .permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        LocationsList = JsonToDatabase.readJsonInfo();
+    public static void getLocationList1() {
+//        StrictMode.ThreadPolicy policy = new
+//                StrictMode.ThreadPolicy.Builder()
+//                .permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
+        LocationsList1 = JsonToDatabase.readJsonInfo();
     }
 
     private void setMarkers() {
@@ -138,7 +141,14 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             Log.i("Tag", "Arraylist leeg.");
             setLocation();
             setJsonObject();
-            getLocationList();
+            getLocationList1();
+            if (UserPreferences.getBeerTypes() != null && UserPreferences.getBeerBrands() != null) {
+                LocationsList2 = Database.filterByBeer(LocationsList1);
+                LocationsList = LocationsList2;
+            }
+            else {
+                LocationsList = LocationsList1;
+            }
         }
         setMarkers();
         Log.i("Tag", "Markers geplaatst");
@@ -402,7 +412,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                //LocationsList.remove(item);
+                                //LocationsList1.remove(item);
                                 nameImgAdapter.notifyDataSetChanged();
                                 view.setAlpha(1);
 

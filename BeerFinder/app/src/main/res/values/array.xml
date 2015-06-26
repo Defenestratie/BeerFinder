@@ -4,18 +4,18 @@
     <!--Afstand-->
     <string-array name="radiusArray">
         <item>1 km</item>
-        <item>2 km</item>
+        <item>2.5 km</item>
         <item>5 km</item>
+        <item>7.5 km</item>
         <item>10 km</item>
-        <item>25 km</item>
     </string-array>
 
     <string-array name="radiusValues">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
+        <item>1000</item>
+        <item>2500</item>
+        <item>5000</item>
+        <item>7500</item>
+        <item>10000</item>
     </string-array>
 
 
@@ -29,11 +29,11 @@
     </string-array>
 
     <string-array name="brandsValues">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
+        <item>Heineken</item>
+        <item>Hertog Jan</item>
+        <item>Jupiler</item>
+        <item>Bavaria</item>
+        <item>Grolsch</item>
     </string-array>
 
     <!--typen bier-->
@@ -41,30 +41,28 @@
         <item>Wit bier</item>
         <item>Alcoholvrij bier</item>
         <item>Pint</item>
-        <item>Normaal </item>
+        <item>Normaal</item>
     </string-array>
 
     <string-array name="beerTypesValues">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
+        <item>Wit bier</item>
+        <item>Alcoholvrij bier</item>
+        <item>Pint</item>
+        <item>Normaal</item>
     </string-array>
 
-    <!---->
+    <!--Establishments-->
     <string-array name="establishmentsArray">
-        <item>Supermarket</item>
+        <item>Bar</item>
         <item>Cafe</item>
-        <item>Pub</item>
-        <item>Restaurant</item>
-        <item>Retailer</item>
+        <item>Liquor store</item>
+        <item>Supermarket/grocery store</item>
     </string-array>
 
     <string-array name="establishmentsValues">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
+        <item>bar</item>
+        <item>cafe</item>
+        <item>liquor_store</item>
+        <item>grocery_or_supermarket</item>
     </string-array>
 </resources>

@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Window;
-import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
@@ -40,7 +39,7 @@ public class Splash extends Activity {
                     Log.i("Tag", "Starting task...");
                     gatherData();
                 } catch (Exception ex) {
-                    new AlertDialog.Builder(getApplication())
+                    new AlertDialog.Builder(Splash.this)
                             .setTitle("Error")
                             .setMessage("Er is iets mis gegaan met het ophalen van uw locatie of de informatie uit de database." +
                                     "Controleer uw internetverbinding.")
@@ -70,7 +69,7 @@ public class Splash extends Activity {
             MapActivity.setJsonObject();
             Log.d("Tag", "Json opgehaald");
             //Json uitpakken
-            MapActivity.getLocationList();
+            MapActivity.getLocationList1();
             Log.d("Tag", "List opgehaald.");
             //Verbinden met database
             new Database().execute().get();
