@@ -43,9 +43,9 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
 
             for(int i = 0; i < establishmentsArray.length; i++){
                 if(i < establishmentsArray.length - 1){
-                    establishmentsString += establishments + "|";
+                    establishmentsString += establishmentsArray[i] + "|";
                 }else{
-                    establishmentsString += establishments;
+                    establishmentsString += establishmentsArray[i];
                 }
             }
             JsonToDatabase.establishments = establishmentsString;
@@ -86,14 +86,19 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
     }
 
     public static JSONObject readJsons(String lat, String lon) throws JSONException, IOException {
-        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
-                + lat + "," + lon +
-                "&radius="+ radius + "&" +
-                "types="+ establishments +"&" +
-                "key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c";
+        JSONObject json = null;
+        try {
+            String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
+                    + lat + "," + lon +
+                    "&radius=" + radius + "&" +
+                    "types=" + establishments + "&" +
+                    "key=AIzaSyBYQQXbvi7sxgOS7N--8kskwjD6x4pJ73c";
+            Log.i("Tag", url);
+            json = readJsonFromUrl(url);
 
-        JSONObject json = readJsonFromUrl(url);
-                 Log.i("Tag", url);
+        }catch(Exception ex){
+            Log.e("Tag", ex.getMessage());
+        }
         return json;
     }
 

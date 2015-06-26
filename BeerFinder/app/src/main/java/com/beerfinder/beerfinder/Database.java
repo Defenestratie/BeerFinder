@@ -198,7 +198,7 @@ public class Database extends AsyncTask<Void, Void, Void> {
                 String sql2 = "SELECT Naam FROM bier WHERE Bier_ID = " + id + "";
                 ResultSet result2 = statement.executeQuery(sql2);
                 while (result2.next()) {
-                    list.add(result2.getString("Naam"));
+                    list.add(/*result2.getString("Merk") + " - " +*/result2.getString("Naam"));
                 }
             }
 

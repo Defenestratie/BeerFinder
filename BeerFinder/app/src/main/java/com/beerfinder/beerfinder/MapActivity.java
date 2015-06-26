@@ -130,16 +130,23 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         }
     }
 
-    public static void checkForBeerPreferences(){
-        if(!LocationsList1.isEmpty()) {
-            if (!UserPreferences.getBeerTypes().isEmpty() || !UserPreferences.getBeerBrands().isEmpty()) {
-                LocationsList2 = Database.filterByBeer(LocationsList1);
-                LocationsList = LocationsList2;
-            } else {
-                LocationsList = LocationsList1;
+    public static void checkForBeerPreferences() {
+        try {
+            if (!LocationsList1.isEmpty()) {
+                if (UserPreferences.getBeerTypes() != null || UserPreferences.getBeerBrands() != null) {
+                    if (!UserPreferences.getBeerTypes().isEmpty() || !UserPreferences.getBeerBrands().isEmpty()) {
+                        LocationsList2 = Database.filterByBeer(LocationsList1);
+                        LocationsList = LocationsList2;
+                    } else {
+                        LocationsList = LocationsList1;
+                    }
+                } else {
+                    LocationsList = LocationsList1;
+                }
             }
+        }catch(Exception ex){
+            Log.d("Tag", "Checkforbeerpreferences: " + ex.getStackTrace().toString());
         }
-
     }
 
     @Override
@@ -176,35 +183,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         InsertToDatabase();
     }
 
-    public void onLocationChanged(Location location) {
-        // Called when a new location is found by the network location provider.
-
-    }
-
-    private class StableArrayAdapter extends ArrayAdapter<String> {
-
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-        public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
-            super(context, textViewResourceId, objects);
-            for (int i = 0; i < objects.size(); ++i) {
-                mIdMap.put(objects.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            String item = getItem(position).toString();
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-    }
 
     @Override
     protected void onResume() {
@@ -363,7 +341,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             try {
                 Thread.sleep(100);
                 Log.d("sleep", "sleeping 100 miliseconds");
-                Toast.makeText(getApplicationContext(),"Waiting for location!" ,Toast.LENGTH_SHORT).show();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -390,14 +367,6 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         //mMap.addMarker(new MarkerOptions().position(latLng).title("You are here!"));
     }
 
-    public static int[] convertIntegers(List<Integer> integers) {
-        int[] ret = new int[integers.size()];
-        Iterator<Integer> iterator = integers.iterator();
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = iterator.next().intValue();
-        }
-        return ret;
-    }
 
     private void setListview() {
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
