@@ -240,11 +240,23 @@ public class Database extends AsyncTask<Void, Void, Void> {
     //returns a list of all beers complying with user preferences
     public static ArrayList<String> suitableBeers(Set<String> bTypes, Set<String> bBrands) {
         ArrayList<String> list = new ArrayList<>();
+        String sql;
         try {
             statement = connection.createStatement();
-            String sql = "SELECT * FROM locaties_bier WHERE " +
-                    "(Soort_Bier = " + setToSqlORStatements(bTypes) + ") AND " +
-                    "(Naam = " + setToSqlORStatements(bBrands) + ")";
+            if (bTypes != null && bBrands == null) {
+
+                sql = "SELECT * FROM locaties_bier WHERE " +
+                        "(Soort_Bier = " + setToSqlORStatements(bTypes) + ")";
+            }
+            else if (bTypes == null && bBrands != null) {
+                sql = "SELECT * FROM locaties_bier WHERE " +
+                        "(Naam = " + setToSqlORStatements(bBrands) + ")";
+            }
+            else {
+                sql = "SELECT * FROM locaties_bier WHERE " +
+                        "(Soort_Bier = " + setToSqlORStatements(bTypes) + ")" +
+                        "(Naam = " + setToSqlORStatements(bBrands) + ")";
+            }
             ResultSet result = statement.executeQuery(sql);
             while (result.next()) {
                 int ID = result.getInt("Bier_ID");
