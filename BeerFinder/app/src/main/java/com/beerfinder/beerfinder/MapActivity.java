@@ -144,8 +144,8 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Database database = new Database();
-        database.closeDatabase();
+//        Database database = new Database();
+//        database.closeDatabase();
     }
 
     @Override
