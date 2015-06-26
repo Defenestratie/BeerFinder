@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    public static double myLatitude;
-    public static double myLongitude;
+    private GoogleMap mMap = null; // Might be null if Google Play services APK is not available.
+    public static double myLatitude = 0.0;
+    public static double myLongitude = 0.0;
 
     //direct locations from JSON
     private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList1 = new ArrayList();
@@ -47,12 +47,12 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     //List that is drawn on the map
     private static ArrayList<com.beerfinder.beerfinder.Location> LocationsList = new ArrayList();
 
-    CustomList nameImgAdapter;
+    CustomList nameImgAdapter = null;
 
     ArrayList<String> nameList = new ArrayList<String>();
     ArrayList<Bitmap> imageList = new ArrayList<Bitmap>();
-    String[] staticNameList;
-    Bitmap[] staticImageList;
+    String[] staticNameList = null;
+    Bitmap[] staticImageList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +60,12 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
 
-        //setUpMapIfNeeded();
         Log.i("Tag", "Map opgezet." + myLatitude + "," + myLongitude);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapActivity.this);
-//        AdView mAdView = (AdView) findViewById(R.id.adView);
-//        AdRequest adRequest = new AdRequest.Builder().build();
-//        mAdView.loadAd(adRequest);
+
     }
 
 
@@ -118,38 +115,52 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     }
 
     public static void getLocationList1() {
-//        StrictMode.ThreadPolicy policy = new
-//                StrictMode.ThreadPolicy.Builder()
-//                .permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
         LocationsList1 = JsonToDatabase.readJsonInfo();
     }
 
     private void setMarkers() {
 
         for (com.beerfinder.beerfinder.Location location : LocationsList) {
+
+
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLat(), location.getLon()))
-                    .title(location.getName()).icon(location.getTypeIcon(this)));
+                    .title(location.getName() + "Nu geopend: " + location.getOpen_now()).icon(location.getTypeIcon(this)));
         }
+    }
+
+    public static void checkForBeerPreferences(){
+        if(!LocationsList1.isEmpty()) {
+            if (!UserPreferences.getBeerTypes().isEmpty() && !UserPreferences.getBeerBrands().isEmpty()) {
+                LocationsList2 = Database.filterByBeer(LocationsList1);
+                LocationsList = LocationsList2;
+            } else {
+                LocationsList = LocationsList1;
+            }
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Database database = new Database();
+        database.closeDatabase();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        checkForBeerPreferences();
 
         if (LocationsList.isEmpty()) {
             Log.i("Tag", "Arraylist leeg.");
             setLocation();
             setJsonObject();
             getLocationList1();
-            if (UserPreferences.getBeerTypes() != null && UserPreferences.getBeerBrands() != null) {
-                LocationsList2 = Database.filterByBeer(LocationsList1);
-                LocationsList = LocationsList2;
-            }
-            else {
-                LocationsList = LocationsList1;
-            }
+            checkForBeerPreferences();
         }
+
         setMarkers();
         Log.i("Tag", "Markers geplaatst");
 
@@ -345,12 +356,12 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         Log.d("Location provider", "" + locationManager.getAllProviders().size());
 
-        while(myLocation[0] == null)
+        while(myLocation[0] == null && (myLatitude == 0.0 && myLongitude == 0.0))
         {
             try {
                 Thread.sleep(100);
                 Log.d("sleep", "sleeping 100 miliseconds");
-                Toast.makeText(getApplicationContext(),"Waiting for location!",Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(),"Waiting for location!" ,Toast.LENGTH_SHORT).show();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -358,11 +369,13 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Get latitude of the current location
-        myLatitude = myLocation[0].getLatitude();
+        if(myLatitude == 0.0 && myLongitude == 0.0) {
+            // Get latitude of the current location
+            myLatitude = myLocation[0].getLatitude();
 
-        // Get longitude of the current location
-        myLongitude = myLocation[0].getLongitude();
+            // Get longitude of the current location
+            myLongitude = myLocation[0].getLongitude();
+        }
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(myLatitude, myLongitude);

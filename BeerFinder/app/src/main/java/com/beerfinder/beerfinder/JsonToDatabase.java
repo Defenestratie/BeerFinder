@@ -36,17 +36,20 @@ public class JsonToDatabase extends AsyncTask<String, Void, Void> {
     }
 
     public static void setEstablishments(Set<String> establishments) {
-        String establishmentsString = "";
-        String[] establishmentsArray = establishments.toArray(new String[establishments.size()]);
+        if(!establishments.isEmpty()) {
+                String establishmentsString = "";
+                String[] establishmentsArray = establishments.toArray(new String[establishments.size()]);
 
-        for(int i = 0; i < establishmentsArray.length; i++){
-            if(i < establishmentsArray.length - 1){
-                establishmentsString += establishments + "|";
-            }else{
-                establishmentsString += establishments;
+
+            for(int i = 0; i < establishmentsArray.length; i++){
+                if(i < establishmentsArray.length - 1){
+                    establishmentsString += establishments + "|";
+                }else{
+                    establishmentsString += establishments;
+                }
             }
+            JsonToDatabase.establishments = establishmentsString;
         }
-        JsonToDatabase.establishments = establishmentsString;
     }
 
 

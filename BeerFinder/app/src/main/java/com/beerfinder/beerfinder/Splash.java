@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Window;
 
@@ -31,7 +32,10 @@ public class Splash extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
 
-
+//        StrictMode.ThreadPolicy policy = new
+//                StrictMode.ThreadPolicy.Builder()
+//                .permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -65,7 +69,10 @@ public class Splash extends Activity {
     private void gatherData() {
         try {
             new getUserData().execute().get();
-            //Json call
+            //UserPreferences ophalen
+            UserPreferences.checkPreferences(this);
+            Log.d("Tag", "UserPreferences opgehaald");
+            //json ophalen
             MapActivity.setJsonObject();
             Log.d("Tag", "Json opgehaald");
             //Json uitpakken
@@ -108,7 +115,7 @@ public class Splash extends Activity {
             try {
                 getUserLocation();
             } catch (Exception ex) {
-
+                Log.d("Tag", "Er is iets mis gegaan bij het ophalen van de locatie");
 
             }
             return null;
@@ -131,21 +138,13 @@ public class Splash extends Activity {
 
         private void getUserLocation() {
 
-            LocationManager locationManager = (LocationManager) Splash.this.getSystemService(Context.LOCATION_SERVICE);
+            LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            // Get latitude of the current location
+            MapActivity.myLatitude = location.getLatitude();
 
-            // Create a criteria object to retrieve provider
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-
-            // Get the name of the best provider
-            String provider = locationManager.getBestProvider(criteria, true);
-
-            // Get Current Location
-            android.location.Location myLocation = null;
-            //locationManager.getLastKnownLocation(provider);
-
-
-            Log.d("Location provider", "" + locationManager.getAllProviders().size());
+            // Get longitude of the current location
+            MapActivity.myLongitude = location.getLongitude();
 
 
         }

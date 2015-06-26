@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -213,15 +214,16 @@ public class Database extends AsyncTask<Void, Void, Void> {
     public static ArrayList<Location> filterByBeer(ArrayList<Location> location) {
         ArrayList<String> IDList = new ArrayList<>();
         ArrayList<Location> filteredList = new ArrayList<>();
+        String sql = "SELECT * FROM locaties_bier WHERE Bier_ID = " +
+                arrayToSqlORStatements(suitableBeers(UserPreferences.getBeerTypes(), UserPreferences.getBeerBrands()));
+        Log.i("Tag: database", "Query 2:" + sql);
         try {
             statement = connection.createStatement();
 //            String id = getBeerTypeID(s);
-            String sql = "SELECT * FROM locaties_bier WHERE Bier_ID = " +
-                    arrayToSqlORStatements(suitableBeers(UserPreferences.getBeerTypes(), UserPreferences.getBeerBrands()));
             ResultSet result = statement.executeQuery(sql);
             while (result.next()) {
-                int ID = result.getInt("Locatie_ID");
-                IDList.add(Integer.toString(ID));
+                String ID = result.getString("Locatie_ID");
+                IDList.add(ID);
             }
         } catch (SQLException ex) {
             Log.i("Database", "Niet Opgehaald." + ex.getMessage());
@@ -243,38 +245,61 @@ public class Database extends AsyncTask<Void, Void, Void> {
         String sql;
         try {
             statement = connection.createStatement();
-            if (bTypes != null && bBrands == null) {
+            if (!bTypes.isEmpty() && bBrands.isEmpty()) {
 
-                sql = "SELECT * FROM locaties_bier WHERE " +
-                        "(Soort_Bier = " + setToSqlORStatements(bTypes) + ")";
+                sql = "SELECT Bier_ID FROM bier WHERE " +
+                        "( " + setToSqlORStatements(bTypes, " Soort_Bier = ") + ")";
             }
-            else if (bTypes == null && bBrands != null) {
-                sql = "SELECT * FROM locaties_bier WHERE " +
-                        "(Naam = " + setToSqlORStatements(bBrands) + ")";
+            else if (bTypes.isEmpty() && !bBrands.isEmpty()) {
+                sql = "SELECT Bier_ID FROM bier WHERE " +
+                        "( " + setToSqlORStatements(bBrands, " Naam = ") + ")";
             }
             else {
-                sql = "SELECT * FROM locaties_bier WHERE " +
-                        "(Soort_Bier = " + setToSqlORStatements(bTypes) + ")" +
-                        "(Naam = " + setToSqlORStatements(bBrands) + ")";
+                sql = "SELECT Bier_ID FROM bier WHERE " +
+                        "( " + setToSqlORStatements(bTypes, " Soort_Bier = ") + ") AND " +
+                        "( " + setToSqlORStatements(bBrands, "Naam = ") +  ")";
             }
+            Log.i("Tag: database", "Query:" + sql);
             ResultSet result = statement.executeQuery(sql);
             while (result.next()) {
                 int ID = result.getInt("Bier_ID");
                 list.add(Integer.toString(ID));
             }
         } catch (SQLException ex) {
-            Log.i("database", "Niet Opgehaald." + ex.getMessage());
+            Log.i("database", "Niet Opgehaald. suitableBeers() " + ex.getMessage());
         }
         return list;
     }
 
+    private static Set<String> getBeerTypeIDs(Set<String> bTypes) {
+        Set<String> newTypes = null;
+        try {
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM typen_bier;";
+            ResultSet result = statement.executeQuery(sql);
+            while (result.next()) {
+                for(String s: bTypes){
+                    if(s.equals(result.getString("Naam"))){
+                        int ID = result.getInt("BierSoort_ID");
+                        newTypes.add(Integer.toString(ID));
+                    }
+                }
+            }
+
+        }catch(SQLException ex){
+            Log.i("database", "Niet Opgehaald. getBeerTypeIDs():  " + ex.getMessage());
+        }
+        return newTypes;
+    }
+
+
     //converts a set<String> to sql syntax with OR
-    public static String setToSqlORStatements(Set<String> set) {
+    public static String setToSqlORStatements(Set<String> set, String whereClause) {
         String[] s = set.toArray(new String[set.size()]);
-        String sql = s[0];
-        for(int i = 1; i < sql.length(); i++) {
-            sql = sql + " OR ";
-            sql = sql + s[i];
+        String sql = whereClause + "'" + s[0] + "'";
+        for(int i = 1; i < s.length; i++) {
+            sql = sql + " OR " + whereClause;
+            sql = sql + "'" + s[i] + "'";
         }
         return sql;
     }
@@ -282,7 +307,7 @@ public class Database extends AsyncTask<Void, Void, Void> {
     //converts a set<String> to sql syntax with OR
     public static String arrayToSqlORStatements(ArrayList<String> strings) {
         String sql = strings.get(0);
-        for(int i = 1; i < sql.length(); i++) {
+        for(int i = 1; i < strings.size(); i++) {
             sql = sql + " OR ";
             sql = sql + strings.get(i);
         }
