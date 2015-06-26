@@ -127,7 +127,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     private void setMarkers() {
 
-        for (com.beerfinder.beerfinder.Location location : LocationsList) {
+        for (com.beerfinder.beerfinder.Location location : LocationsList2) {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(location.getLat(), location.getLon()))
                     .title(location.getName()).icon(location.getTypeIcon(this)));
@@ -137,10 +137,11 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        if (LocationsList.isEmpty()) {
+        if (LocationsList2.isEmpty()) {
             Log.i("Tag", "Arraylist leeg.");
             setLocation();
             setJsonObject();
+<<<<<<< HEAD
             getLocationList1();
             if (UserPreferences.getBeerTypes() != null && UserPreferences.getBeerBrands() != null) {
                 LocationsList2 = Database.filterByBeer(LocationsList1);
@@ -149,6 +150,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
             else {
                 LocationsList = LocationsList1;
             }
+=======
+            getLocationList();
+            LocationsList2 = Database.filterByBeer(LocationsList);
+>>>>>>> ce6a1f111f65b61db110badff47ba88f70bb3741
         }
         setMarkers();
         Log.i("Tag", "Markers geplaatst");
@@ -233,7 +238,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     private void startInfoPage(int position) {
         Intent intent = new Intent(getApplicationContext(), LocationInfo_activity.class);
-        com.beerfinder.beerfinder.Location info = LocationsList.get(position);
+        com.beerfinder.beerfinder.Location info = LocationsList2.get(position);
         intent.putExtra("Name", info.getName());
         intent.putExtra("Type", info.getType());
         intent.putExtra("Address", info.getAddress());
@@ -387,7 +392,7 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     private void setListview() {
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
 
-        for (com.beerfinder.beerfinder.Location location : LocationsList) {
+        for (com.beerfinder.beerfinder.Location location : LocationsList2) {
             nameList.add(location.getName());
             imageList.add(location.getListTypeIcon(this));
         }
