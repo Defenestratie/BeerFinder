@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="ip" >jdbc:mysql://145.24.222.189:8001</string>
+    <string name="UserName">Elize</string>
+    <string name="Password">Bierapp</string>
+
+</resources>

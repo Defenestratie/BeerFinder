@@ -99,7 +99,7 @@ public class Database extends AsyncTask<Void, Void, Void> {
                     + "');";
             statement.execute(sql);
         } catch (SQLException ex) {
-            Log.i(getClass().toString(), "Niet ingevoerd." + ex.getMessage());
+            Log.i(getClass().toString(), "Niet ingevoerd. insertLocationIntoDatabase() " + ex.getMessage());
         }
 
     }
@@ -214,8 +214,8 @@ public class Database extends AsyncTask<Void, Void, Void> {
     public static ArrayList<Location> filterByBeer(ArrayList<Location> location) {
         ArrayList<String> IDList = new ArrayList<>();
         ArrayList<Location> filteredList = new ArrayList<>();
-        String sql = "SELECT * FROM locaties_bier WHERE Bier_ID = " +
-                arrayToSqlORStatements(suitableBeers(UserPreferences.getBeerTypes(), UserPreferences.getBeerBrands()));
+        String sql = "SELECT * FROM locaties_bier WHERE " +
+                arrayToSqlORStatements(suitableBeers(UserPreferences.getBeerTypes(), UserPreferences.getBeerBrands()), " Bier_ID = ");
         Log.i("Tag: database", "Query 2:" + sql);
         try {
             statement = connection.createStatement();
@@ -252,12 +252,12 @@ public class Database extends AsyncTask<Void, Void, Void> {
             }
             else if (bTypes.isEmpty() && !bBrands.isEmpty()) {
                 sql = "SELECT Bier_ID FROM bier WHERE " +
-                        "( " + setToSqlORStatements(bBrands, " Naam = ") + ")";
+                        "( " + setToSqlORStatements(bBrands, " Merk = ") + ")";
             }
             else {
                 sql = "SELECT Bier_ID FROM bier WHERE " +
                         "( " + setToSqlORStatements(bTypes, " Soort_Bier = ") + ") AND " +
-                        "( " + setToSqlORStatements(bBrands, "Naam = ") +  ")";
+                        "( " + setToSqlORStatements(bBrands, "Merk = ") +  ")";
             }
             Log.i("Tag: database", "Query:" + sql);
             ResultSet result = statement.executeQuery(sql);
@@ -271,26 +271,6 @@ public class Database extends AsyncTask<Void, Void, Void> {
         return list;
     }
 
-    private static Set<String> getBeerTypeIDs(Set<String> bTypes) {
-        Set<String> newTypes = null;
-        try {
-            statement = connection.createStatement();
-            String sql = "SELECT * FROM typen_bier;";
-            ResultSet result = statement.executeQuery(sql);
-            while (result.next()) {
-                for(String s: bTypes){
-                    if(s.equals(result.getString("Naam"))){
-                        int ID = result.getInt("BierSoort_ID");
-                        newTypes.add(Integer.toString(ID));
-                    }
-                }
-            }
-
-        }catch(SQLException ex){
-            Log.i("database", "Niet Opgehaald. getBeerTypeIDs():  " + ex.getMessage());
-        }
-        return newTypes;
-    }
 
 
     //converts a set<String> to sql syntax with OR
@@ -305,10 +285,10 @@ public class Database extends AsyncTask<Void, Void, Void> {
     }
 
     //converts a set<String> to sql syntax with OR
-    public static String arrayToSqlORStatements(ArrayList<String> strings) {
-        String sql = strings.get(0);
+    public static String arrayToSqlORStatements(ArrayList<String> strings, String whereClause) {
+        String sql = whereClause + strings.get(0);
         for(int i = 1; i < strings.size(); i++) {
-            sql = sql + " OR ";
+            sql = sql + " OR " + whereClause;
             sql = sql + strings.get(i);
         }
         return sql;

@@ -32,10 +32,10 @@ public class Splash extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
 
-//        StrictMode.ThreadPolicy policy = new
-//                StrictMode.ThreadPolicy.Builder()
-//                .permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

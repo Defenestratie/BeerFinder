@@ -122,16 +122,17 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
         for (com.beerfinder.beerfinder.Location location : LocationsList) {
 
-
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(location.getLat(), location.getLon()))
-                    .title(location.getName() + "Nu geopend: " + location.getOpen_now()).icon(location.getTypeIcon(this)));
+            if(location.getOpen_now().equals("Open") || location.getOpen_now().equals("Onbekend")) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(location.getLat(), location.getLon()))
+                        .title(location.getName()).icon(location.getTypeIcon(this)));
+            }
         }
     }
 
     public static void checkForBeerPreferences(){
         if(!LocationsList1.isEmpty()) {
-            if (!UserPreferences.getBeerTypes().isEmpty() && !UserPreferences.getBeerBrands().isEmpty()) {
+            if (!UserPreferences.getBeerTypes().isEmpty() || !UserPreferences.getBeerBrands().isEmpty()) {
                 LocationsList2 = Database.filterByBeer(LocationsList1);
                 LocationsList = LocationsList2;
             } else {
@@ -144,9 +145,10 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        Database database = new Database();
-//        database.closeDatabase();
+        Database database = new Database();
+        database.closeDatabase();
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
