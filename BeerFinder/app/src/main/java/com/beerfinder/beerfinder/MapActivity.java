@@ -136,29 +136,35 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                onRefresh();
+            }
+        }).start();
 
-        if (LocationsList.isEmpty()) {
-            Log.i("Tag", "Arraylist leeg.");
-            setLocation();
-            setJsonObject();
-            getLocationList1();
-            if (UserPreferences.getBeerTypes() != null && UserPreferences.getBeerBrands() != null) {
-                LocationsList2 = Database.filterByBeer(LocationsList1);
-                LocationsList = LocationsList2;
-            }
-            else {
-                LocationsList = LocationsList1;
-            }
+
+    }
+
+    public void onRefresh() {
+//        if (LocationsList.isEmpty()) {
+//            Log.i("Tag", "Arraylist leeg.");
+        setLocation();
+        setJsonObject();
+        getLocationList1();
+        if (UserPreferences.getBeerTypes() != null && UserPreferences.getBeerBrands() != null) {
+            LocationsList2 = Database.filterByBeer(LocationsList1);
+            LocationsList = LocationsList2;
+        }
+        else {
+            LocationsList = LocationsList1;
+
         }
         setMarkers();
         Log.i("Tag", "Markers geplaatst");
 
-        new Thread(new Runnable() {
-            public void run() {
-                setListview();
-                Log.i("Tag", "Listview gemaakt.");
-            }
-        }).start();
+        setListview();
+        Log.i("Tag", "Listview gemaakt.");
 
         InsertToDatabase();
     }
@@ -387,44 +393,52 @@ public class MapActivity extends FragmentActivity implements GoogleMap.OnMarkerC
     private void setListview() {
         final ListView listview = (ListView) findViewById(R.id.listViewPlaces);
 
-        for (com.beerfinder.beerfinder.Location location : LocationsList) {
-            nameList.add(location.getName());
-            imageList.add(location.getListTypeIcon(this));
-        }
+        listview.post(new Runnable() {
+                          @Override
+                          public void run() {
+                              for (com.beerfinder.beerfinder.Location location : LocationsList) {
+                                  nameList.add(location.getName());
+                                  imageList.add(location.getListTypeIcon(MapActivity.this));
+                              }
 
-        staticNameList = new String[nameList.size()];
-        staticNameList = nameList.toArray(staticNameList);
+                              staticNameList = new String[nameList.size()];
+                              staticNameList = nameList.toArray(staticNameList);
 
-        staticImageList = new Bitmap[imageList.size()];
-        staticImageList = imageList.toArray(staticImageList);
+                              staticImageList = new Bitmap[imageList.size()];
+                              staticImageList = imageList.toArray(staticImageList);
 
-        nameImgAdapter = new CustomList(this, staticNameList, staticImageList);
+                              nameImgAdapter = new CustomList(MapActivity.this, staticNameList, staticImageList);
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                              listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view,
-                                    final int position, final long id) {
+                                  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                                  @Override
+                                  public void onItemClick(AdapterView<?> parent, final View view,
+                                                          final int position, final long id) {
 
-                final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(500).alpha(0)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                //LocationsList1.remove(item);
-                                nameImgAdapter.notifyDataSetChanged();
-                                view.setAlpha(1);
+                                      final String item = (String) parent.getItemAtPosition(position);
+                                      view.animate().setDuration(500).alpha(0)
+                                              .withEndAction(new Runnable() {
+                                                  @Override
+                                                  public void run() {
+                                                      //LocationsList1.remove(item);
+                                                      nameImgAdapter.notifyDataSetChanged();
+                                                      view.setAlpha(1);
 
-                                startInfoPage(position);
-                            }
-                        });
-            }
+                                                      startInfoPage(position);
+                                                  }
+                                              });
+                                  }
 
-        });
+                              });
 
 
-        listview.setAdapter(nameImgAdapter);
+                              listview.setAdapter(nameImgAdapter);
+                          }
+                      }
+
+        );
+
     }
 }
 
